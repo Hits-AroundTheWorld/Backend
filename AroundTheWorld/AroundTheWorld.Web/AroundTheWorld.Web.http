@@ -1,0 +1,6 @@
+@AroundTheWorld.Web_HostAddress = http://localhost:5145
+
+GET {{AroundTheWorld.Web_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
