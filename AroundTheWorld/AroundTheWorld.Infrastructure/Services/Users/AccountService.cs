@@ -1,12 +1,9 @@
 ﻿using AroundTheWorld.Application.DTO.User;
-using AroundTheWorld.Application.Interfaces;
+using AroundTheWorld.Application.Exceptions;
 using AroundTheWorld.Application.Interfaces.Users;
+using AroundTheWorld.Infrastructure.Helpers;
 using AutoMapper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace AroundTheWorld.Infrastructure.Services.Users
 {
@@ -20,7 +17,6 @@ namespace AroundTheWorld.Infrastructure.Services.Users
         public AccountService(
             IMapper mapper,
             IUserRepository userRepository
-
         )
         {
             _mapper = mapper;
@@ -29,11 +25,32 @@ namespace AroundTheWorld.Infrastructure.Services.Users
 
         public async Task EditProfile(EditProfileDTO editProfileCreds, Guid userId)
         {
+
+            var validateUserData = Validation.validateUserData(
+                null,
+                editProfileCreds.Email,
+                editProfileCreds.BirthDate,
+                editProfileCreds.PhoneNumber
+                );
+
+            if (validateUserData != string.Empty)
+            {
+                throw new BadRequestException(validateUserData);
+            }
+
             var user = await _userRepository.GetByIdAsync(userId);
+            
 
             if (user == null)
             {
-                throw new Exception("");
+                throw new NotFoundException("Такого пользователя не существует");
+            }
+
+            var userWithThisEmail = await _userRepository.GetByEmailAsync(editProfileCreds.Email);
+
+            if (userWithThisEmail != null && userWithThisEmail.Email != user.Email)
+            {
+                throw new BadRequestException("Этот email уже занят");
             }
 
             user.AboutMe = editProfileCreds.AboutMe;

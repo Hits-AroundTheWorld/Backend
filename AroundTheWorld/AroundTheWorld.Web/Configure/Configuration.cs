@@ -11,8 +11,7 @@ namespace AroundTheWorld.Web.Configure
     public static class Configuration
     {
         public static void ConfigurePresentationLayer(this IServiceCollection services, IConfiguration configuration)
-        {
-            
+        { 
             services.AddMiddlewares();
             services.ConfigureSwaggerAuth();
             services.ConfigureJWTAuth(configuration);

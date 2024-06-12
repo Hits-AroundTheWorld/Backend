@@ -1,6 +1,8 @@
-﻿using AroundTheWorld.Application.Interfaces.Users;
+﻿using AroundTheWorld.Application.Interfaces;
+using AroundTheWorld.Application.Interfaces.Users;
 using AroundTheWorld.Infrastructure.Policies;
 using AroundTheWorld.Infrastructure.Repositories;
+using AroundTheWorld.Infrastructure.Services;
 using AroundTheWorld.Infrastructure.Services.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -28,7 +30,7 @@ namespace AroundTheWorld.Infrastructure
 
         private static void AddDbContext(this IServiceCollection services, IConfiguration configuration)
         {
-            var connectionString = configuration.GetConnectionString("DefaultConnection");
+            var connectionString = configuration.GetConnectionString("AppDbConnection");
             services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
 
             services.AddSingleton<RedisRepository>(
@@ -46,7 +48,9 @@ namespace AroundTheWorld.Infrastructure
         {
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IAccountService, AccountService>();
-        }
+            services.AddScoped<IJwtService, JwtService>();
+            services.AddSingleton<TokenProps>();
+        } 
     }
 }
 

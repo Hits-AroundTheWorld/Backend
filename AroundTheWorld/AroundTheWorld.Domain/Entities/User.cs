@@ -12,5 +12,7 @@ namespace AroundTheWorld.Domain.Entities
         public float Rating { get; set; }
         public string? AboutMe { get; set; }
         public string Country { get; set; }
+        public DateTime BirthDate { get; set; }
+        public string PhoneNumber { get; set; }
     }
 }

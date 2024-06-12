@@ -1,4 +1,5 @@
-﻿using AroundTheWorld.Web.Exceptions;
+﻿using AroundTheWorld.Application.Exceptions;
+using AroundTheWorld.Web.Exceptions;
 using Newtonsoft.Json;
 
 namespace AroundTheWorld.Web.Middlewares
@@ -23,7 +24,18 @@ namespace AroundTheWorld.Web.Middlewares
 
             switch (exception)
             {
-
+                case BadRequestException:
+                    statusCode = StatusCodes.Status400BadRequest;
+                    break;
+                case NotFoundException:
+                    statusCode = StatusCodes.Status404NotFound;
+                    break;
+                case ForbiddenException:
+                    statusCode = StatusCodes.Status403Forbidden;
+                    break;
+                default:
+                    statusCode = StatusCodes.Status500InternalServerError;
+                    break;
             }
 
             var errorResponse = new ExceptionResponseModel

@@ -13,5 +13,7 @@ namespace AroundTheWorld.Application.DTO.User
         public string Password { get; set; }
         public string AboutMe { get; set; }
         public string Country { get; set; }
+        public DateTime BirthDate { get; set; }
+        public string PhoneNumber { get; set; }
     }
 }

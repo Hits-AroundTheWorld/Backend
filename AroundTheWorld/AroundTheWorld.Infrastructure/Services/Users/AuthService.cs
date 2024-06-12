@@ -1,8 +1,12 @@
 ﻿using AroundTheWorld.Application.DTO.User;
+using AroundTheWorld.Application.Exceptions;
 using AroundTheWorld.Application.Interfaces;
 using AroundTheWorld.Application.Interfaces.Users;
 using AroundTheWorld.Domain.Entities;
+using AroundTheWorld.Infrastructure.Helpers;
 using AutoMapper;
+using Microsoft.VisualBasic;
+using System.Net.WebSockets;
 
 namespace AroundTheWorld.Infrastructure.Services.Users
 {
@@ -30,14 +34,14 @@ namespace AroundTheWorld.Infrastructure.Services.Users
 
             if (user == null)
             {
-                throw new Exception("");
+                throw new NotFoundException("Такого пользователя не существует");
             }
 
             var isCredsValid = BCrypt.Net.BCrypt.Verify(loginCreds.Password, user.Password);
 
             if (!isCredsValid)
             {
-                throw new Exception("");
+                throw new BadRequestException("Неправильный логин или пароль");
             }
 
             var token = _tokenService.CreateJWTToken(user.Id);
@@ -55,6 +59,26 @@ namespace AroundTheWorld.Infrastructure.Services.Users
 
         public async Task<TokenResponseDTO> Register(RegisterInfoDTO registerCreds)
         {
+            var validateUserData = Validation.validateUserData(
+                registerCreds.Password,
+                registerCreds.Email, 
+                registerCreds.BirthDate,
+                registerCreds.PhoneNumber
+                );
+
+            if (validateUserData != string.Empty)
+            {
+                throw new BadRequestException(validateUserData);
+            }
+
+            var user = await _userRepository.GetByEmailAsync(registerCreds.Email);
+
+            if (user != null)
+            {
+                throw new BadRequestException("Этот email уже занят");
+            }
+
+
             var newUser = _mapper.Map<User>(registerCreds);
             newUser.Password = BCrypt.Net.BCrypt.HashPassword(registerCreds.Password);
 
@@ -70,5 +94,6 @@ namespace AroundTheWorld.Infrastructure.Services.Users
 
             return tokenDTO;
         }
+        
     }
 }
