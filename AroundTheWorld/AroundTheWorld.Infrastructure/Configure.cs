@@ -1,8 +1,10 @@
 ﻿using AroundTheWorld.Application.Interfaces;
+using AroundTheWorld.Application.Interfaces.Trips;
 using AroundTheWorld.Application.Interfaces.Users;
 using AroundTheWorld.Infrastructure.Policies;
 using AroundTheWorld.Infrastructure.Repositories;
 using AroundTheWorld.Infrastructure.Services;
+using AroundTheWorld.Infrastructure.Services.Trips;
 using AroundTheWorld.Infrastructure.Services.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -17,6 +19,7 @@ namespace AroundTheWorld.Infrastructure
             services.AddDbContext(configuration);
             services.AddRepositories();
             services.AddServices();
+            services.AddTripServices();
         }
 
         public static void AddAutoMigration(this IServiceProvider services)
@@ -42,6 +45,7 @@ namespace AroundTheWorld.Infrastructure
         private static void AddRepositories(this IServiceCollection services)
         {
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ITripRepository, TripRepository>();
             services.AddScoped<TokenBlacklistFilterAttribute>();
         }
         private static void AddServices(this IServiceCollection services)
@@ -50,7 +54,11 @@ namespace AroundTheWorld.Infrastructure
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IJwtService, JwtService>();
             services.AddSingleton<TokenProps>();
-        } 
+        }
+        private static void AddTripServices(this IServiceCollection services)
+        {
+            services.AddScoped<ITripService, TripService>();
+        }
     }
 }
 

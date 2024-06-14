@@ -3,6 +3,7 @@ using System;
 using AroundTheWorld.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AroundTheWorld.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240612124819_AddedTripEntity")]
+    partial class AddedTripEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -41,48 +44,30 @@ namespace AroundTheWorld.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("CreatedTime")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<double?>("FinishXCoordinate")
-                        .HasColumnType("double precision");
-
-                    b.Property<double?>("FinishYCoordinate")
-                        .HasColumnType("double precision");
+                    b.Property<DateOnly>("EndDate")
+                        .HasColumnType("date");
 
                     b.Property<string>("InvitationLink")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<bool>("IsPublic")
                         .HasColumnType("boolean");
 
-                    b.Property<int?>("MaxBudget")
+                    b.Property<int>("MaxBudget")
                         .HasColumnType("integer");
 
-                    b.Property<int>("MaxPeopleCount")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<double?>("StartXCoordinate")
-                        .HasColumnType("double precision");
-
-                    b.Property<double?>("StartYCoordinate")
-                        .HasColumnType("double precision");
+                    b.Property<DateOnly>("StartDate")
+                        .HasColumnType("date");
 
                     b.Property<Guid>("TripFounderId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("TripMiniDescription")
-                        .HasColumnType("text");
+                    b.Property<double>("XCoordinate")
+                        .HasColumnType("double precision");
 
-                    b.Property<string>("TripName")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<double>("YCoordinate")
+                        .HasColumnType("double precision");
 
                     b.HasKey("TripId");
 

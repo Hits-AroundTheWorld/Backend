@@ -9,6 +9,7 @@ namespace AroundTheWorld.Infrastructure
     {
         public DbSet<User> Users {  get; init; }
         public DbSet<CompanionsPair> Companions { get; init; }
+        public DbSet<Trip> Trips { get; init; } 
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
@@ -20,6 +21,4 @@ namespace AroundTheWorld.Infrastructure
                 .HasKey(e => new { e.FirstCompanion, e.SecondCompanion });
         }
     }
-
-
 }
