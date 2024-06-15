@@ -17,12 +17,22 @@ namespace AroundTheWorld.Infrastructure.Helpers
 
             return isValid;
         }
-        public static bool ValidatePassword(string passwrod)
+        public static bool ValidatePassword(string password)
         {
-            string passwordPatter = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$";
-            var isValid = Regex.IsMatch(passwrod, passwordPatter);
 
-            return isValid;
+            if (string.IsNullOrWhiteSpace(password) || password.Length < 8)
+            {
+                return false;
+            }
+
+            string passwordRegex = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,15}$";
+
+            if (!Regex.IsMatch(password, passwordRegex))
+            {
+                return false;
+            }
+
+            return true;
         }
         public static bool ValidatePhoneNumber(string passwrod)
         {

@@ -1,16 +1,20 @@
-﻿using AroundTheWorld.Application.DTO.Trip;
+﻿using AroundTheWorld.Application.DTO;
+using AroundTheWorld.Application.DTO.Trip;
 using AroundTheWorld.Application.Exceptions;
 using AroundTheWorld.Application.Interfaces.Trips;
 using AroundTheWorld.Application.Interfaces.Users;
 using AroundTheWorld.Domain.Entities;
+using AroundTheWorld.Domain.Entities.Enums;
 using AroundTheWorld.Infrastructure.Helpers.TripValidation;
 using AutoMapper;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AroundTheWorld.Infrastructure.Services.Trips
 {
@@ -32,23 +36,146 @@ namespace AroundTheWorld.Infrastructure.Services.Trips
             {
                 throw new NotFoundException("Такого пользователя не существует");
             }
-            if(ValidationTripInfo.ValidateTripDate(createTripCreds.StartDate) != string.Empty)
+            var errorHandler = ValidationTripInfo.ValidateTripDate(createTripCreds.StartDate, createTripCreds.EndDate);
+            if ( errorHandler != string.Empty)
             {
-                throw new BadRequestException($"Дата {createTripCreds.StartDate.Date} не подходит, дата должно быть либо сегодняшней, либо будущая!");
+                throw new BadRequestException($"{errorHandler}");
             }
             var newTrip = _mapper.Map<Trip>(createTripCreds);
             newTrip.TripFounderId = userId;
-            newTrip.CreatedTime = DateTime.Now;
+            newTrip.TripFounderFullName = user.FullName;
+            newTrip.CreatedTime = DateTime.UtcNow;
+            newTrip.PeopleCountNow = 1;
+            newTrip.Status = TripStatus.WaitingForStart;
             await _tripRepository.AddAsync(newTrip);
         }
-
-       private async Task<Boolean> IsFounder(Guid userId)
+        private IQueryable<Trip> FilterTrips(RequestSorting? sorting, IQueryable<Trip> trips)
         {
-            var trip = await _tripRepository.GetByUserIdAsync(userId);
-            if(trip == null){
-                return false;
+            switch (sorting)
+            {
+                case RequestSorting.CreateAsc:
+                    return trips.OrderBy(p => p.StartDate);
+                default:
+                    return trips.OrderByDescending(p => p.EndDate);
             }
-            return true;
+
+        }
+        public async Task<GetQuerybleTripsInfoDTO> GetMyTrips(int size, int page, Guid userId, string? tripName, RequestSorting? requestSorting, DateTime? tripDate)
+        {
+            if (page <= 0)
+            {
+                page = 1;
+            }
+            if (size <= 0)
+            {
+                size = 10;
+            }
+            var applications = await _tripRepository.GetByUserIdAsync(userId);
+            if (applications == null)
+            {
+                throw new NotFoundException("У вас нет созданных поездок!");
+            }
+
+            var applicationsQueryable = applications.AsQueryable();
+
+            if (tripName != null)
+            {
+                applicationsQueryable = applicationsQueryable.Where(aR => aR.TripName.Contains(tripName));
+            }
+            if (tripDate != null)
+            {
+                applicationsQueryable = applicationsQueryable.Where(aR => aR.StartDate == tripDate);
+            }
+            applicationsQueryable = FilterTrips(requestSorting, applicationsQueryable);
+
+            int sizeOfPage = size;
+            var countOfPages = (int)Math.Ceiling((double)applicationsQueryable.Count() / sizeOfPage);
+
+            if (page > countOfPages)
+            {
+                throw new BadRequestException("Такой страницы нет");
+            }
+
+            var lowerBound = (page - 1) * sizeOfPage;
+            var pagedApplications = applicationsQueryable.Skip(lowerBound).Take(sizeOfPage).ToList();
+
+            var paginationDto = new PaginationInfoDTO
+            {
+                Size = size,
+                Page = page,
+                Current = countOfPages,
+            };
+
+            var tripsDto = _mapper.Map<IEnumerable<GetTripsInfoDTO>>(pagedApplications).AsQueryable();
+
+            var applicationsDTO = new GetQuerybleTripsInfoDTO
+            {
+                Trips = tripsDto,
+                Pagination = paginationDto
+            };
+
+            return applicationsDTO;
+        }
+
+
+        public async Task<GetQuerybleTripsInfoDTO> GetPublicTrips(int size, int page, Guid? userId, string? tripName, RequestSorting? requestSorting, DateTime? tripDate)
+        {
+            if (page <= 0)
+            {
+                page = 1;
+            }
+            if (size <= 0)
+            {
+                size = 10;
+            }
+            var applications = await _tripRepository.GetTripsAsync();
+            if (applications == null)
+            {
+                throw new NotFoundException("У вас нет созданных поездок!");
+            }
+
+            var applicationsQueryable = applications.AsQueryable();
+            if(userId != null)
+            {
+                applicationsQueryable = applicationsQueryable.Where(aR => aR.TripFounderId == userId);
+            }
+            if (tripName != null)
+            {
+                applicationsQueryable = applicationsQueryable.Where(aR => aR.TripName.Contains(tripName));
+            }
+            if (tripDate != null)
+            {
+                applicationsQueryable = applicationsQueryable.Where(aR => aR.StartDate == tripDate);
+            }
+            applicationsQueryable = FilterTrips(requestSorting, applicationsQueryable);
+
+            int sizeOfPage = size;
+            var countOfPages = (int)Math.Ceiling((double)applicationsQueryable.Count() / sizeOfPage);
+
+            if (page > countOfPages)
+            {
+                throw new BadRequestException("Такой страницы нет");
+            }
+
+            var lowerBound = (page - 1) * sizeOfPage;
+            var pagedApplications = applicationsQueryable.Skip(lowerBound).Take(sizeOfPage).ToList();
+
+            var paginationDto = new PaginationInfoDTO
+            {
+                Size = size,
+                Page = page,
+                Current = countOfPages,
+            };
+
+            var tripsDto = _mapper.Map<IEnumerable<GetTripsInfoDTO>>(pagedApplications).AsQueryable();
+
+            var applicationsDTO = new GetQuerybleTripsInfoDTO
+            {
+                Trips = tripsDto,
+                Pagination = paginationDto
+            };
+
+            return applicationsDTO;
         }
     }
 }

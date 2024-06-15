@@ -11,6 +11,7 @@ namespace AroundTheWorld.Application.Interfaces.Trips
     public interface ITripRepository:IBaseRepository<Trip>
     {
         public Task<List<Trip>?> GetByUserIdAsync(Guid userId);
+        public Task<List<Trip>?> GetTripsAsync();
     }
 }
  
