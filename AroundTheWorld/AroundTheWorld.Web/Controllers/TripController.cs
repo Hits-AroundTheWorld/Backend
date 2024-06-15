@@ -1,4 +1,6 @@
-﻿using AroundTheWorld.Application.Communication.Commands.Trip.CreateTrip;
+﻿using AroundTheWorld.Application.Communication.Commands.Trip.ApplyForTrip;
+using AroundTheWorld.Application.Communication.Commands.Trip.ChangeTripRequestStatus;
+using AroundTheWorld.Application.Communication.Commands.Trip.CreateTrip;
 using AroundTheWorld.Application.Communication.Queries.Trip.GetMyTrip;
 using AroundTheWorld.Application.Communication.Queries.Trip.GetPublicTrips;
 using AroundTheWorld.Application.Communication.Queries.User.GetProfile;
@@ -61,6 +63,34 @@ namespace AroundTheWorld.Web.Controllers
             var getTrips = new GetPublicTripsQuery(size, page, personId, tripName, requestSorting, tripDate);
             var trips = await Mediator.Send(getTrips);
             return Ok(trips);
+        }
+        [HttpPost("apply/{tripId}")]
+        [Authorize]
+        [ServiceFilter(typeof(TokenBlacklistFilterAttribute))]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 400)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 401)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 404)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 500)]
+        public async Task<ActionResult> ApplyForTrip(Guid tripId)
+        {
+            var applyTrip = new ApplyForTripCommand(tripId, UserId);
+            await Mediator.Send(applyTrip);
+            return Ok();
+        }
+        [HttpPut("status")]
+        [Authorize]
+        [ServiceFilter(typeof(TokenBlacklistFilterAttribute))]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 400)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 401)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 404)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 500)]
+        public async Task<ActionResult> ChangeStatus(ChangeRequestStatusInfoDTO changeRequestStatusInfoDTO)
+        {
+            var changeTripStatus = new ChangeTripRequestStatusCommand(UserId, changeRequestStatusInfoDTO);
+            await Mediator.Send(changeTripStatus);
+            return Ok();
         }
     }
 }

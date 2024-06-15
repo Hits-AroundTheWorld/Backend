@@ -8,11 +8,8 @@ using System.Threading.Tasks;
 
 namespace AroundTheWorld.Application.Interfaces.Trips
 {
-    public interface ITripRepository:IBaseRepository<Trip>
+    public interface ITripAndUsersRepository:IBaseRepository<TripAndUsers>
     {
-        public Task<List<Trip>?> GetByUserIdAsync(Guid userId);
-        public Task<List<Trip>?> GetTripsAsync();
-        public Task<bool> IsFounder(Guid userId, Guid tripId);
+        public Task<TripAndUsers?> GetRequestByIdAsync(Guid userId, Guid tripId);
     }
 }
- 

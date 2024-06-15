@@ -23,11 +23,13 @@ namespace AroundTheWorld.Infrastructure.Services.Trips
         private readonly IMapper _mapper;
         private readonly ITripRepository _tripRepository;
         private readonly IUserRepository _userRepository;
-        public TripService(IMapper mapper, ITripRepository tripRepository, IUserRepository userRepository)
+        private readonly ITripAndUsersRepository _tripAndUsersRepository;
+        public TripService(IMapper mapper, ITripRepository tripRepository, IUserRepository userRepository, ITripAndUsersRepository tripAndUsersRepository)
         {
             _mapper = mapper;
             _tripRepository = tripRepository;
             _userRepository = userRepository;
+            _tripAndUsersRepository = tripAndUsersRepository;
         }
         public async Task CreateTrip(Guid userId, CreateTripInfoDTO createTripCreds)
         {
@@ -176,6 +178,43 @@ namespace AroundTheWorld.Infrastructure.Services.Trips
             };
 
             return applicationsDTO;
+        }
+        public async  Task ApplyForTrip(Guid tripId, Guid userId)
+        {
+            bool isFounder = await _tripRepository.IsFounder(userId, tripId);
+            if(isFounder == true)
+            {
+                throw new BadRequestException("Вы не можете подавать заявки на свою же поездку!");
+            }
+            var request = await _tripAndUsersRepository.GetRequestByIdAsync(tripId, userId);
+            if(request != null)
+            {
+                throw new BadRequestException("Вы не можете подать несколько раз на одну поездку!");
+            }
+            var creds = new ApplyForTripInfoDTO
+            {
+                TripId = tripId,
+                UserId = userId
+            };
+            var newRequest = _mapper.Map<TripAndUsers>(creds);
+            newRequest.Status = UserRequestStatus.InQueue;
+            await _tripAndUsersRepository.AddAsync(newRequest);
+        }
+
+        public async Task ChangeTripRequestStatus(Guid ownerId ,ChangeRequestStatusInfoDTO infoDTO)
+        {
+            bool isFounder = await _tripRepository.IsFounder(ownerId, infoDTO.TripId);
+            if (!isFounder)
+            {
+                throw new BadRequestException("Вы не можете изменять статус не в вашей заявке!");
+            }
+            var tripRequest = await _tripAndUsersRepository.GetRequestByIdAsync(infoDTO.UserId, infoDTO.TripId);
+            if (tripRequest == null)
+            {
+                throw new NotFoundException("Запрос на поездку не найден.");
+            }
+            tripRequest.Status = infoDTO.Status;
+            await _tripAndUsersRepository.UpdateAsync(tripRequest);
         }
     }
 }

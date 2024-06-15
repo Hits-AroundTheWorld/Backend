@@ -27,5 +27,15 @@ namespace AroundTheWorld.Infrastructure.Repositories
         {
             return await _dbContext.Trips.Where(t => t.IsPublic == true).ToListAsync();
         }
+
+        public async Task<bool> IsFounder(Guid userId, Guid tripId)
+        {
+            var probFounder = await _dbContext.Trips.FirstOrDefaultAsync(t => t.TripFounderId == userId && t.TripId == tripId);
+            if(probFounder == null)
+            {
+                return false;
+            }
+            return true;
+        }
     }
 }

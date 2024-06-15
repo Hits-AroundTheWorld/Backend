@@ -14,5 +14,7 @@ namespace AroundTheWorld.Application.Interfaces.Trips
         public Task<GetQuerybleTripsInfoDTO> GetMyTrips(int size, int page, Guid userId, string? tripName,RequestSorting? requestSorting, DateTime? tripDate);
 
         public Task<GetQuerybleTripsInfoDTO> GetPublicTrips(int size, int page, Guid? userId, string? tripName, RequestSorting? requestSorting, DateTime? tripDate);
+        public Task ApplyForTrip(Guid tripId, Guid userId);
+        public Task ChangeTripRequestStatus(Guid userId, ChangeRequestStatusInfoDTO infoDTO);
     }
 }
