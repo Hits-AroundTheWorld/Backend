@@ -257,24 +257,14 @@ namespace AroundTheWorld.Infrastructure.Services.Trips
 
         public async Task<IQueryable<GetUsersFromTripInfoDTO>> GetUsersFromTrip(Guid tripId)
         {
-            var trips = await _tripAndUsersRepository.GetUsersFromTrip(tripId);
+            var users = await _tripAndUsersRepository.GetUsersFromTrip(tripId);
 
-            if (trips == null || trips.Count == 0)
+            if (users == null || users.Count == 0)
             {
                 return Enumerable.Empty<GetUsersFromTripInfoDTO>().AsQueryable();
             }
 
-            var usersDto = trips.Select(t => new GetUsersFromTripInfoDTO
-            {
-                Id = t.User.Id,
-                FullName = t.User.FullName,
-                Email = t.User.Email,
-                Rating = t.User.Rating,
-                AboutMe = t.User.AboutMe,
-                Country = t.User.Country,
-                BirthDate = t.User.BirthDate,
-                PhoneNumber = t.User.PhoneNumber
-            }).AsQueryable();
+            var usersDto = _mapper.ProjectTo<GetUsersFromTripInfoDTO>(users.AsQueryable());
 
             return usersDto;
         }
