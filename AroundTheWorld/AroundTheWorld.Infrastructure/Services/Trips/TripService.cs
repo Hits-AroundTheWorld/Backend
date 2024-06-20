@@ -9,6 +9,7 @@ using AroundTheWorld.Infrastructure.Helpers.TripValidation;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualBasic;
 using Pipelines.Sockets.Unofficial.Buffers;
 using System;
 using System.Collections.Generic;
@@ -267,6 +268,52 @@ namespace AroundTheWorld.Infrastructure.Services.Trips
             var usersDto = _mapper.ProjectTo<GetUsersFromTripInfoDTO>(users.AsQueryable());
 
             return usersDto;
+        }
+        public async Task<GetTripRequestsInfoDTO> GetTripRequests(int size, int page, Guid tripId)
+        {
+            if (page <= 0)
+            {
+                page = 1;
+            }
+            if (size <= 0)
+            {
+                size = 10;
+            }
+            var trips = await _tripAndUsersRepository.GetRequests(tripId);
+            if (trips == null)
+            {
+                throw new NotFoundException("У вас нет созданных поездок!");
+            }
+
+            var requests = trips.AsQueryable();
+
+            int sizeOfPage = size;
+            var countOfPages = (int)Math.Ceiling((double)requests.Count() / sizeOfPage);
+
+            if (page > countOfPages)
+            {
+                throw new BadRequestException("Такой страницы нет");
+            }
+
+            var lowerBound = (page - 1) * sizeOfPage;
+            var pagedTrips = requests.Skip(lowerBound).Take(sizeOfPage).ToList();
+
+            var paginationDto = new PaginationInfoDTO
+            {
+                Size = size,
+                Page = page,
+                Current = countOfPages,
+            };
+
+            var tripsDTO = _mapper.Map<IEnumerable<RequestsInfoDTO>>(pagedTrips).AsQueryable();
+
+            var requestsDTO = new GetTripRequestsInfoDTO
+            {
+                Requests = tripsDTO,
+                PaginationInfo = paginationDto
+            };
+
+            return requestsDTO;
         }
     }
 }

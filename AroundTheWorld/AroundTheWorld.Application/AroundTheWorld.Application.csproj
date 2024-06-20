@@ -15,8 +15,4 @@
     <ProjectReference Include="..\AroundTheWorld.Domain\AroundTheWorld.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Communication\Queries\Trip\GetTripRequests\" />
-  </ItemGroup>
-
 </Project>

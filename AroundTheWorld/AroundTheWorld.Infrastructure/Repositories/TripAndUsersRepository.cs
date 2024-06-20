@@ -1,5 +1,6 @@
 ﻿using AroundTheWorld.Application.Interfaces.Trips;
 using AroundTheWorld.Domain.Entities;
+using AroundTheWorld.Domain.Entities.Enums;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -34,6 +35,10 @@ namespace AroundTheWorld.Infrastructure.Repositories
                 .Include(t => t.User)
                 .Where(t => t.TripId == tripId)
                 .ToListAsync();
+        }
+        public async Task<List<TripAndUsers>?> GetRequests(Guid tripId)
+        {
+            return await _dbContext.TripAndUsers.Where(t => t.TripId == tripId && t.Status == UserRequestStatus.InQueue).ToListAsync();
         }
     }
 }

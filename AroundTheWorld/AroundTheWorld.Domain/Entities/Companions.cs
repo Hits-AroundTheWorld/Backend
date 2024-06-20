@@ -10,5 +10,6 @@ namespace AroundTheWorld.Domain.Entities
     {
         public Guid FirstCompanion { get; set; }
         public Guid SecondCompanion { get; set; }
+        public Double Rating { get; set; }
     }
 }

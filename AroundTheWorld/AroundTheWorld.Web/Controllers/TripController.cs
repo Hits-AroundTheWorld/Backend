@@ -5,6 +5,7 @@ using AroundTheWorld.Application.Communication.Commands.Trip.CreateTrip;
 using AroundTheWorld.Application.Communication.Commands.Trip.LeaveFromTrip;
 using AroundTheWorld.Application.Communication.Queries.Trip.GetMyTrip;
 using AroundTheWorld.Application.Communication.Queries.Trip.GetPublicTrips;
+using AroundTheWorld.Application.Communication.Queries.Trip.GetTripRequests;
 using AroundTheWorld.Application.Communication.Queries.Trip.GetUsersFromTrip;
 using AroundTheWorld.Application.Communication.Queries.User.GetProfile;
 using AroundTheWorld.Application.DTO.Trip;
@@ -135,6 +136,20 @@ namespace AroundTheWorld.Web.Controllers
         {
             var getUsers = new GetUsersFromTripQuery(tripId);
             var result = await Mediator.Send(getUsers);
+            return Ok(result);
+        }
+        [HttpGet("requests/{tripId}")]
+        [Authorize]
+        [ServiceFilter(typeof(TokenBlacklistFilterAttribute))]
+        [ProducesResponseType(typeof(GetTripRequestsInfoDTO), 200)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 400)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 401)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 404)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 500)]
+        public async Task<ActionResult<GetTripRequestsInfoDTO>> GetRequests(int page, int size, Guid tripId)
+        {
+            var getRequests = new GetTripRequestsQuery(size, page, tripId);
+            var result = await Mediator.Send(getRequests);
             return Ok(result);
         }
     }
