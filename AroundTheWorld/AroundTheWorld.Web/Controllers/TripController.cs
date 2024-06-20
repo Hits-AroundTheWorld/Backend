@@ -2,6 +2,7 @@
 using AroundTheWorld.Application.Communication.Commands.Trip.ChangeTripRequestStatus;
 using AroundTheWorld.Application.Communication.Commands.Trip.ChangeTripStatus;
 using AroundTheWorld.Application.Communication.Commands.Trip.CreateTrip;
+using AroundTheWorld.Application.Communication.Commands.Trip.EditTrip;
 using AroundTheWorld.Application.Communication.Commands.Trip.LeaveFromTrip;
 using AroundTheWorld.Application.Communication.Queries.Trip.GetMyTrip;
 using AroundTheWorld.Application.Communication.Queries.Trip.GetPublicTrips;
@@ -38,6 +39,20 @@ namespace AroundTheWorld.Web.Controllers
         {
             var createTrip = new CreateTripCommand(UserId, createTripCreds);
             await Mediator.Send(createTrip);
+            return Ok();
+        }
+        [HttpPut("edit/{tripId}")]
+        [Authorize]
+        [ServiceFilter(typeof(TokenBlacklistFilterAttribute))]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 400)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 401)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 404)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 500)]
+        public async Task<ActionResult> EditTrip(Guid tripId, EditTripInfoDTO editCreds)
+        {
+            var editTrip = new EditTripCommand(UserId, tripId, editCreds);
+            await Mediator.Send(editTrip);
             return Ok();
         }
         [HttpGet("my")]

@@ -11,6 +11,7 @@ namespace AroundTheWorld.Application.Interfaces.Trips
     public interface ITripService
     {
         public Task CreateTrip(Guid userId, CreateTripInfoDTO createTripCreds);
+        public Task EditTrip(Guid userId,Guid tripId, EditTripInfoDTO editTripCreds);
         public Task<GetQuerybleTripsInfoDTO> GetMyTrips(int size, int page, Guid userId, string? tripName,RequestSorting? requestSorting, DateTime? tripDate);
 
         public Task<GetQuerybleTripsInfoDTO> GetPublicTrips(int size, int page, Guid? userId, string? tripName, RequestSorting? requestSorting, DateTime? tripDate);

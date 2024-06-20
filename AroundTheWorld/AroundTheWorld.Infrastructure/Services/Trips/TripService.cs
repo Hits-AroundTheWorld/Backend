@@ -54,6 +54,60 @@ namespace AroundTheWorld.Infrastructure.Services.Trips
             newTrip.Status = TripStatus.WaitingForStart;
             await _tripRepository.AddAsync(newTrip);
         }
+        public async Task EditTrip(Guid userId,Guid tripId, EditTripInfoDTO editTripCreds)
+        {
+            var user = await _userRepository.GetByIdAsync(userId);
+            if (user == null)
+            {
+                throw new NotFoundException("Такого пользователя не существует");
+            }
+            var trip= await _tripRepository.GetTripById(userId, tripId); 
+            if (trip == null)
+            {
+                throw new BadRequestException("Вы не можете менять информацию не своей поездки");
+            }
+            if (editTripCreds.StartDate != null) 
+            {
+                var errorHandler = ValidationTripInfo.ValidateTripDate(editTripCreds.StartDate, trip.EndDate);
+                if (errorHandler != string.Empty)
+                {
+                    throw new BadRequestException($"{errorHandler}");
+                }
+                trip.StartDate = editTripCreds.StartDate;
+                await _tripRepository.SaveChangeAsync();
+            }
+            if (editTripCreds.EndDate != null)
+            {
+                var errorHandler = ValidationTripInfo.ValidateTripDate(trip.StartDate, editTripCreds.EndDate);
+                if (errorHandler != string.Empty)
+                {
+                    throw new BadRequestException($"{errorHandler}");
+                }
+                trip.EndDate = editTripCreds.EndDate;
+                await _tripRepository.SaveChangeAsync();
+            }
+            if (editTripCreds.TripMiniDescription != null)
+            {
+                trip.TripMiniDescription = editTripCreds.TripMiniDescription;
+            }
+            if(editTripCreds.IsPublic != null)
+            {
+                trip.IsPublic = editTripCreds.IsPublic;
+            }
+            if(editTripCreds.TripName != null)
+            {
+                trip.TripName  = editTripCreds.TripName;    
+            }
+            if(editTripCreds.MaxPeopleCount != null)
+            {
+                if(editTripCreds.MaxPeopleCount < trip.PeopleCountNow)
+                {
+                    throw new BadRequestException("Вы не можете указать максимальное количество людей меньше, чем их сейчас!");
+                }
+                trip.MaxPeopleCount = editTripCreds.MaxPeopleCount;
+            }
+            await _tripRepository.UpdateAsync(trip);
+        }
         private IQueryable<Trip> FilterTrips(RequestSorting? sorting, IQueryable<Trip> trips)
         {
             switch (sorting)
