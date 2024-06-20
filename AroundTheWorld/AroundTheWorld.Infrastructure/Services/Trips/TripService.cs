@@ -9,9 +9,11 @@ using AroundTheWorld.Infrastructure.Helpers.TripValidation;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Pipelines.Sockets.Unofficial.Buffers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -215,6 +217,66 @@ namespace AroundTheWorld.Infrastructure.Services.Trips
             }
             tripRequest.Status = infoDTO.Status;
             await _tripAndUsersRepository.UpdateAsync(tripRequest);
+        }
+
+        public async Task ChangeTripStatus(Guid userId, ChangeTripStatusInfoDTO infoDTO)
+        {
+            var trip = await _tripRepository.GetTripById(userId, infoDTO.TripId);
+            if (trip == null)
+            {
+                throw new NotFoundException("У вас нет такой поездки, вы не можете менять ей статус!");
+            }
+            trip.Status = infoDTO.TripStatus;
+            await _tripRepository.UpdateAsync(trip);
+            if(infoDTO.TripStatus == TripStatus.InProccess)
+            {
+                var allTrips = await _tripRepository.GetTripsAsync();
+                if(allTrips == null)
+                {
+                    throw new BadRequestException("На данный момент не существует в пуле поездок)");
+                }
+                var relatedTimeTrips =  allTrips.Where(aT => aT.StartDate >= trip.StartDate && aT.EndDate <= trip.EndDate && aT.TripId != trip.TripId);
+                foreach(var relTrip in relatedTimeTrips) {
+                    var usersTrip = await _tripAndUsersRepository.GetTripById(relTrip.TripId);
+                    usersTrip.Status = UserRequestStatus.Rejected;
+                    await _tripAndUsersRepository.UpdateAsync(usersTrip);
+                }
+            }
+        }
+
+        public async Task LeaveFromTrip(Guid userId, Guid tripId)
+        {
+            var trip = await _tripAndUsersRepository.GetRequestByIdAsync(userId, tripId);
+            if(trip == null)
+            {
+                throw new NotFoundException("Такой поездки не существует!");
+            }
+            trip.Status = UserRequestStatus.LeftFromTrip;
+            await _tripAndUsersRepository.UpdateAsync(trip);
+        }
+
+        public async Task<IQueryable<GetUsersFromTripInfoDTO>> GetUsersFromTrip(Guid tripId)
+        {
+            var trips = await _tripAndUsersRepository.GetUsersFromTrip(tripId);
+
+            if (trips == null || trips.Count == 0)
+            {
+                return Enumerable.Empty<GetUsersFromTripInfoDTO>().AsQueryable();
+            }
+
+            var usersDto = trips.Select(t => new GetUsersFromTripInfoDTO
+            {
+                Id = t.User.Id,
+                FullName = t.User.FullName,
+                Email = t.User.Email,
+                Rating = t.User.Rating,
+                AboutMe = t.User.AboutMe,
+                Country = t.User.Country,
+                BirthDate = t.User.BirthDate,
+                PhoneNumber = t.User.PhoneNumber
+            }).AsQueryable();
+
+            return usersDto;
         }
     }
 }

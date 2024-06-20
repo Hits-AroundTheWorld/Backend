@@ -46,6 +46,7 @@ namespace AroundTheWorld.Infrastructure
         {
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<ITripRepository, TripRepository>();
+            services.AddScoped<ITripAndUsersRepository, TripAndUsersRepository>();
             services.AddScoped<TokenBlacklistFilterAttribute>();
         }
         private static void AddServices(this IServiceCollection services)

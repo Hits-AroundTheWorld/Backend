@@ -22,5 +22,18 @@ namespace AroundTheWorld.Infrastructure.Repositories
         {
             return await _dbContext.TripAndUsers.FirstOrDefaultAsync(t => t.UserId == userId && t.TripId == tripId);
         }
+
+        public async Task<TripAndUsers?> GetTripById(Guid tripId)
+        {
+            return await _dbContext.TripAndUsers.FirstOrDefaultAsync(t => t.TripId == tripId);
+        }
+
+        public async Task<List<TripAndUsers>?> GetUsersFromTrip(Guid tripId)
+        {
+            return await _dbContext.TripAndUsers
+                .Include(t => t.User)
+                .Where(t => t.TripId == tripId)
+                .ToListAsync();
+        }
     }
 }

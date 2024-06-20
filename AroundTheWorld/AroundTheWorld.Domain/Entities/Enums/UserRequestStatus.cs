@@ -10,6 +10,7 @@ namespace AroundTheWorld.Domain.Entities.Enums
     {
         InQueue,
         Approved,
-        Rejected
+        Rejected,
+        LeftFromTrip
     }
 }

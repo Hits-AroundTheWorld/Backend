@@ -23,6 +23,12 @@ namespace AroundTheWorld.Infrastructure.Repositories
         {
             return await _dbContext.Trips.Where(u => u.TripFounderId == userId).ToListAsync();
         }
+
+        public async Task<Trip?> GetTripById(Guid founderId, Guid tripId)
+        {
+            return await _dbContext.Trips.FirstOrDefaultAsync(t => t.TripFounderId == founderId && t.TripId == tripId);
+        }
+
         public async Task<List<Trip>?> GetTripsAsync()
         {
             return await _dbContext.Trips.Where(t => t.IsPublic == true).ToListAsync();

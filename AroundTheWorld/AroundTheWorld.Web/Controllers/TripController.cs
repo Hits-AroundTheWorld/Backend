@@ -1,8 +1,11 @@
 ﻿using AroundTheWorld.Application.Communication.Commands.Trip.ApplyForTrip;
 using AroundTheWorld.Application.Communication.Commands.Trip.ChangeTripRequestStatus;
+using AroundTheWorld.Application.Communication.Commands.Trip.ChangeTripStatus;
 using AroundTheWorld.Application.Communication.Commands.Trip.CreateTrip;
+using AroundTheWorld.Application.Communication.Commands.Trip.LeaveFromTrip;
 using AroundTheWorld.Application.Communication.Queries.Trip.GetMyTrip;
 using AroundTheWorld.Application.Communication.Queries.Trip.GetPublicTrips;
+using AroundTheWorld.Application.Communication.Queries.Trip.GetUsersFromTrip;
 using AroundTheWorld.Application.Communication.Queries.User.GetProfile;
 using AroundTheWorld.Application.DTO.Trip;
 using AroundTheWorld.Domain.Entities.Enums;
@@ -78,6 +81,20 @@ namespace AroundTheWorld.Web.Controllers
             await Mediator.Send(applyTrip);
             return Ok();
         }
+        [HttpPut("user/status")]
+        [Authorize]
+        [ServiceFilter(typeof(TokenBlacklistFilterAttribute))]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 400)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 401)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 404)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 500)]
+        public async Task<ActionResult> ChangeUserStatus(ChangeRequestStatusInfoDTO changeRequestStatusInfoDTO)
+        {
+            var changeTripStatus = new ChangeTripRequestStatusCommand(UserId, changeRequestStatusInfoDTO);
+            await Mediator.Send(changeTripStatus);
+            return Ok();
+        }
         [HttpPut("status")]
         [Authorize]
         [ServiceFilter(typeof(TokenBlacklistFilterAttribute))]
@@ -86,11 +103,39 @@ namespace AroundTheWorld.Web.Controllers
         [ProducesResponseType(typeof(ExceptionResponseModel), 401)]
         [ProducesResponseType(typeof(ExceptionResponseModel), 404)]
         [ProducesResponseType(typeof(ExceptionResponseModel), 500)]
-        public async Task<ActionResult> ChangeStatus(ChangeRequestStatusInfoDTO changeRequestStatusInfoDTO)
+        public async Task<ActionResult> ChangeStatus(ChangeTripStatusInfoDTO tripInfoCreds)
         {
-            var changeTripStatus = new ChangeTripRequestStatusCommand(UserId, changeRequestStatusInfoDTO);
+            var changeTripStatus = new ChangeTripStatusCommand(UserId, tripInfoCreds);
             await Mediator.Send(changeTripStatus);
             return Ok();
+        }
+        [HttpPut("leave/{tripId}")]
+        [Authorize]
+        [ServiceFilter(typeof(TokenBlacklistFilterAttribute))]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 400)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 401)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 404)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 500)]
+        public async Task<ActionResult> LeaveFromTrip(Guid tripId)
+        {
+            var leaveFromTrip = new LeaveFromTripCommand(UserId, tripId);
+            await Mediator.Send(leaveFromTrip);
+            return Ok();
+        }
+        [HttpGet("{tripId}")]
+        [Authorize]
+        [ServiceFilter(typeof(TokenBlacklistFilterAttribute))]
+        [ProducesResponseType(typeof(GetUsersFromTripInfoDTO),200)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 400)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 401)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 404)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 500)]
+        public async Task<ActionResult<GetUsersFromTripInfoDTO>> GetUsersFromTrip(Guid tripId)
+        {
+            var getUsers = new GetUsersFromTripQuery(tripId);
+            var result = await Mediator.Send(getUsers);
+            return Ok(result);
         }
     }
 }
