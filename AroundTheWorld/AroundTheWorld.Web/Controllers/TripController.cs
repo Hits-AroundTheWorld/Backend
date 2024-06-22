@@ -4,6 +4,7 @@ using AroundTheWorld.Application.Communication.Commands.Trip.ChangeTripStatus;
 using AroundTheWorld.Application.Communication.Commands.Trip.CreateTrip;
 using AroundTheWorld.Application.Communication.Commands.Trip.EditTrip;
 using AroundTheWorld.Application.Communication.Commands.Trip.LeaveFromTrip;
+using AroundTheWorld.Application.Communication.Commands.Trip.RemoveTrip;
 using AroundTheWorld.Application.Communication.Queries.Trip.GetMyTrip;
 using AroundTheWorld.Application.Communication.Queries.Trip.GetPublicTrips;
 using AroundTheWorld.Application.Communication.Queries.Trip.GetTripRequests;
@@ -63,9 +64,9 @@ namespace AroundTheWorld.Web.Controllers
         [ProducesResponseType(typeof(ExceptionResponseModel), 401)]
         [ProducesResponseType(typeof(ExceptionResponseModel), 404)]
         [ProducesResponseType(typeof(ExceptionResponseModel), 500)]
-        public async Task<ActionResult<GetQuerybleTripsInfoDTO>> GetMyTrips([FromQuery] int size, int page, string? tripName, RequestSorting? requestSorting, DateTime? tripDate)
+        public async Task<ActionResult<GetQuerybleTripsInfoDTO>> GetMyTrips([FromQuery] int size, int page, string? tripName, RequestSorting? requestSorting, DateTime? tripDate, bool isOwner=false)
         {
-            var getTrips = new GetMyTripsQuery(size,page,UserId, tripName,requestSorting,tripDate);
+            var getTrips = new GetMyTripsQuery(size,page,UserId, tripName,requestSorting,tripDate, isOwner);
             var trips = await Mediator.Send(getTrips);
             return Ok(trips);
         }
@@ -166,6 +167,20 @@ namespace AroundTheWorld.Web.Controllers
             var getRequests = new GetTripRequestsQuery(size, page, tripId);
             var result = await Mediator.Send(getRequests);
             return Ok(result);
+        }
+        [HttpDelete("remove/{tripId}")]
+        [Authorize]
+        [ServiceFilter(typeof(TokenBlacklistFilterAttribute))]
+        [ProducesResponseType(typeof(GetTripRequestsInfoDTO), 200)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 400)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 401)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 404)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 500)]
+        public async Task<ActionResult> RemoveTrip(Guid tripId)
+        {
+            var removeTrip = new RemoveTripCommand(UserId,tripId);
+            await Mediator.Send(removeTrip);
+            return Ok();
         }
     }
 }

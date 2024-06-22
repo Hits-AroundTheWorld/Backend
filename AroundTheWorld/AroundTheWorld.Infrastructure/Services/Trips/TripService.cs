@@ -13,6 +13,7 @@ using Microsoft.VisualBasic;
 using Pipelines.Sockets.Unofficial.Buffers;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -119,7 +120,7 @@ namespace AroundTheWorld.Infrastructure.Services.Trips
             }
 
         }
-        public async Task<GetQuerybleTripsInfoDTO> GetMyTrips(int size, int page, Guid userId, string? tripName, RequestSorting? requestSorting, DateTime? tripDate)
+        public async Task<GetQuerybleTripsInfoDTO> GetMyTrips(int size, int page, Guid userId, string? tripName, RequestSorting? requestSorting, DateTime? tripDate, bool isOwner)
         {
             if (page <= 0)
             {
@@ -129,7 +130,27 @@ namespace AroundTheWorld.Infrastructure.Services.Trips
             {
                 size = 10;
             }
-            var applications = await _tripRepository.GetByUserIdAsync(userId);
+            List<Trip> applications;
+
+            if (isOwner)
+            {
+                applications = await _tripRepository.GetByUserIdAsync(userId);
+            }
+            else
+            {
+                List<Guid> tripsIds = await _tripAndUsersRepository.GetUserTrips(userId);
+                applications = new List<Trip>();
+
+                foreach (var tripId in tripsIds)
+                {
+                    var trip = await _tripRepository.GetByTripIdAsync(tripId);
+                    if (trip != null)
+                    {
+                        applications.Add(trip);
+                    }
+                }
+            }
+
             if (applications == null)
             {
                 throw new NotFoundException("У вас нет созданных поездок!");
@@ -368,6 +389,25 @@ namespace AroundTheWorld.Infrastructure.Services.Trips
             };
 
             return requestsDTO;
+        }
+
+        public async Task RemoveTrip(Guid userId, Guid tripId)
+        {
+            var trip = await _tripRepository.GetTripById(userId, tripId);
+            if (trip == null)
+            {
+                throw new NotFoundException("Такая поездка не найдена, либо вы не являетесь ее владельцем!");
+            }
+            if(trip.Status == TripStatus.InProccess || trip.Status == TripStatus.Ended)
+            {
+                throw new BadRequestException("Вы не можете удалить начатую или поездку которая закончилась!");
+            }
+            var usersWithTrip = await _tripAndUsersRepository.GetUsersFromTrip(tripId);
+            foreach(var user in usersWithTrip)
+            {
+                await _tripAndUsersRepository.DeleteAsync(user);
+            }
+            await _tripRepository.DeleteAsync(trip);
         }
     }
 }

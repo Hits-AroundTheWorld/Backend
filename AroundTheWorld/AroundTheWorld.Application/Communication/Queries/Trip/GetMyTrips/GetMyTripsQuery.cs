@@ -9,5 +9,5 @@ using System.Threading.Tasks;
 
 namespace AroundTheWorld.Application.Communication.Queries.Trip.GetMyTrip
 {
-    public record GetMyTripsQuery(int size,int page,Guid userId, string? tripName, RequestSorting? requestSorting, DateTime? tripDate) : IRequest<GetQuerybleTripsInfoDTO>;
+    public record GetMyTripsQuery(int size,int page,Guid userId, string? tripName, RequestSorting? requestSorting, DateTime? tripDate, bool isOwner) : IRequest<GetQuerybleTripsInfoDTO>;
 }

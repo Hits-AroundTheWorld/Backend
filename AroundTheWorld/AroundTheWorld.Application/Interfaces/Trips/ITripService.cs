@@ -12,7 +12,7 @@ namespace AroundTheWorld.Application.Interfaces.Trips
     {
         public Task CreateTrip(Guid userId, CreateTripInfoDTO createTripCreds);
         public Task EditTrip(Guid userId,Guid tripId, EditTripInfoDTO editTripCreds);
-        public Task<GetQuerybleTripsInfoDTO> GetMyTrips(int size, int page, Guid userId, string? tripName,RequestSorting? requestSorting, DateTime? tripDate);
+        public Task<GetQuerybleTripsInfoDTO> GetMyTrips(int size, int page, Guid userId, string? tripName,RequestSorting? requestSorting, DateTime? tripDate, bool isOwner);
 
         public Task<GetQuerybleTripsInfoDTO> GetPublicTrips(int size, int page, Guid? userId, string? tripName, RequestSorting? requestSorting, DateTime? tripDate);
         public Task ApplyForTrip(Guid tripId, Guid userId);
@@ -21,5 +21,6 @@ namespace AroundTheWorld.Application.Interfaces.Trips
         public Task LeaveFromTrip(Guid userId, Guid tripId);
         public Task<IQueryable<GetUsersFromTripInfoDTO>> GetUsersFromTrip(Guid tripId);
         public Task<GetTripRequestsInfoDTO> GetTripRequests(int size, int page,Guid tripId);
+        public Task RemoveTrip(Guid userId, Guid tripId);
     }
 }

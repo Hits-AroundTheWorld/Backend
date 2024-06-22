@@ -43,5 +43,10 @@ namespace AroundTheWorld.Infrastructure.Repositories
             }
             return true;
         }
+
+        public async Task<Trip?> GetByTripIdAsync(Guid tripId)
+        {
+            return await _dbContext.Trips.FirstOrDefaultAsync(t => t.TripId == tripId);
+        }
     }
 }

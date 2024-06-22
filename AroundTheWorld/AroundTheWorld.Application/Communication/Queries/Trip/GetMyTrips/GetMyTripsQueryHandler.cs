@@ -24,7 +24,7 @@ namespace AroundTheWorld.Application.Communication.Queries.Trip.GetMyTrips
 
         public async Task<GetQuerybleTripsInfoDTO> Handle(GetMyTripsQuery request, CancellationToken cancellationToken)
         {
-            var trips = await _tripService.GetMyTrips(request.size, request.page, request.userId, request.tripName, request.requestSorting, request.tripDate) ;
+            var trips = await _tripService.GetMyTrips(request.size, request.page, request.userId, request.tripName, request.requestSorting, request.tripDate, request.isOwner);
             return trips;
         }
     }
