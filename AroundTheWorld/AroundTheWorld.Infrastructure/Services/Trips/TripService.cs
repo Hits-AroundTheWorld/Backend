@@ -291,7 +291,13 @@ namespace AroundTheWorld.Infrastructure.Services.Trips
             {
                 throw new NotFoundException("Запрос на поездку не найден.");
             }
+            var trip = await _tripRepository.GetByTripIdAsync(tripRequest.TripId);
             tripRequest.Status = infoDTO.Status;
+            if(tripRequest.Status == UserRequestStatus.Approved)
+            {
+                trip.PeopleCountNow+=1;
+                await _tripRepository.UpdateAsync(trip);    
+            }
             await _tripAndUsersRepository.UpdateAsync(tripRequest);
         }
 

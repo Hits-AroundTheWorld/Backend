@@ -15,3 +15,4 @@ namespace AroundTheWorld.Application.DTO.User
         public string Country { get; set; }
     }
 }
+
