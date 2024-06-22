@@ -3,6 +3,7 @@ using System;
 using AroundTheWorld.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AroundTheWorld.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240615175450_AddStatusToUsers")]
+    partial class AddStatusToUsers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -29,9 +32,6 @@ namespace AroundTheWorld.Infrastructure.Migrations
 
                     b.Property<Guid>("SecondCompanion")
                         .HasColumnType("uuid");
-
-                    b.Property<double>("Rating")
-                        .HasColumnType("double precision");
 
                     b.HasKey("FirstCompanion", "SecondCompanion");
 
