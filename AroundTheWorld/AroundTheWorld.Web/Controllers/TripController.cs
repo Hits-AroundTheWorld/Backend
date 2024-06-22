@@ -11,6 +11,7 @@ using AroundTheWorld.Application.Communication.Queries.Trip.GetTripRequests;
 using AroundTheWorld.Application.Communication.Queries.Trip.GetUsersFromTrip;
 using AroundTheWorld.Application.Communication.Queries.User.GetProfile;
 using AroundTheWorld.Application.DTO.Trip;
+using AroundTheWorld.Application.DTO.User;
 using AroundTheWorld.Domain.Entities.Enums;
 using AroundTheWorld.Infrastructure.Policies;
 using AroundTheWorld.Web.Controllers.Base;
