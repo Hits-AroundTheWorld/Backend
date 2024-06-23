@@ -48,5 +48,10 @@ namespace AroundTheWorld.Infrastructure.Repositories
         {
             return await _dbContext.Trips.FirstOrDefaultAsync(t => t.TripId == tripId);
         }
+        public async Task<bool> IsTripExists(Guid tripId)
+        {
+            var isTripExists = await _dbContext.Trips.Where(t => t.TripId == tripId).AnyAsync();
+            return isTripExists;
+        }
     }
 }

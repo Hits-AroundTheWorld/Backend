@@ -53,6 +53,8 @@ namespace AroundTheWorld.Infrastructure.Services.Users
                 throw new BadRequestException("Этот email уже занят");
             }
 
+            user.BirthDate = editProfileCreds.BirthDate;
+            user.PhoneNumber = editProfileCreds.PhoneNumber;
             user.AboutMe = editProfileCreds.AboutMe;
             user.FullName = editProfileCreds.FullName;
             user.Email = editProfileCreds.Email;

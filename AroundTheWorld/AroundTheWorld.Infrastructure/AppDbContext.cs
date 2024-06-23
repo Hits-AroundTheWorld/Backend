@@ -12,8 +12,12 @@ namespace AroundTheWorld.Infrastructure
         public DbSet<Trip> Trips { get; init; }
         public DbSet<TripDays> TripDays { get; init; }
         public DbSet<TripAndUsers> TripAndUsers { get; init; }
+        public DbSet<Checklist> Checklists { get; init; }
+        public DbSet<Checkpoint> Checkpoints { get; init; }
+        public DbSet<TimeSlot> TimeSlots { get; init; }
+        public DbSet<DayMapPoint> DayMapPoints { get; init; }
 
-
+        
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -24,6 +28,8 @@ namespace AroundTheWorld.Infrastructure
                 .HasKey(e => new { e.FirstCompanion, e.SecondCompanion });
             modelBuilder.Entity<TripAndUsers>()
                 .HasKey(e => new { e.TripId, e.UserId });
+            modelBuilder.Entity<DayMapPoint>()
+                .HasKey(e => new { e.DayId, e.MapPoint });
             modelBuilder.Entity<TripDays>()
                 .HasKey(e => e.TripId);
         }

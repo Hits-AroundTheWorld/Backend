@@ -9,9 +9,7 @@ using AroundTheWorld.Application.Communication.Queries.Trip.GetMyTrip;
 using AroundTheWorld.Application.Communication.Queries.Trip.GetPublicTrips;
 using AroundTheWorld.Application.Communication.Queries.Trip.GetTripRequests;
 using AroundTheWorld.Application.Communication.Queries.Trip.GetUsersFromTrip;
-using AroundTheWorld.Application.Communication.Queries.User.GetProfile;
 using AroundTheWorld.Application.DTO.Trip;
-using AroundTheWorld.Application.DTO.User;
 using AroundTheWorld.Domain.Entities.Enums;
 using AroundTheWorld.Infrastructure.Policies;
 using AroundTheWorld.Web.Controllers.Base;
@@ -19,7 +17,6 @@ using AroundTheWorld.Web.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Cryptography.X509Certificates;
 
 namespace AroundTheWorld.Web.Controllers
 {

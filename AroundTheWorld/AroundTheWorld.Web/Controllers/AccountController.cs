@@ -68,6 +68,5 @@ namespace AroundTheWorld.Web.Controllers
             return Ok();
         }
 
-
     }
 }
