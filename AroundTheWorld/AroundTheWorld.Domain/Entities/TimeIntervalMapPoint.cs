@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace AroundTheWorld.Domain.Entities
 {
-    public class DayMapPoint
+    public class TimeIntervalMapPoint
     {
         public MapPoint MapPoint { get; set; }
-        public Guid DayId { get; set; }
+        public Guid ParentId { get; set; }
     }
 }

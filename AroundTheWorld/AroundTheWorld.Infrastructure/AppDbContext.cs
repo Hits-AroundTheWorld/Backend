@@ -10,12 +10,11 @@ namespace AroundTheWorld.Infrastructure
         public DbSet<User> Users { get; init; }
         public DbSet<CompanionsPair> Companions { get; init; }
         public DbSet<Trip> Trips { get; init; }
-        public DbSet<TripDays> TripDays { get; init; }
         public DbSet<TripAndUsers> TripAndUsers { get; init; }
         public DbSet<Checklist> Checklists { get; init; }
         public DbSet<Checkpoint> Checkpoints { get; init; }
-        public DbSet<TimeSlot> TimeSlots { get; init; }
-        public DbSet<DayMapPoint> DayMapPoints { get; init; }
+        public DbSet<TimeInterval> TimeIntervals { get; init; }
+        public DbSet<TimeIntervalMapPoint> MapPoints { get; init; }
 
         
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
@@ -28,10 +27,8 @@ namespace AroundTheWorld.Infrastructure
                 .HasKey(e => new { e.FirstCompanion, e.SecondCompanion });
             modelBuilder.Entity<TripAndUsers>()
                 .HasKey(e => new { e.TripId, e.UserId });
-            modelBuilder.Entity<DayMapPoint>()
-                .HasKey(e => new { e.DayId, e.MapPoint });
-            modelBuilder.Entity<TripDays>()
-                .HasKey(e => e.TripId);
+            modelBuilder.Entity<TimeIntervalMapPoint>()
+                .HasKey(e => new { e.ParentId, e.MapPoint });
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using AroundTheWorld.Application.DTO.Days;
+﻿using AroundTheWorld.Application.DTO.TimeIntervals;
 using AroundTheWorld.Domain.Entities;
 using AutoMapper;
 
@@ -8,7 +8,7 @@ namespace AroundTheWorld.Application.Helpers.AutoMapper
     {
         public TimeIntervalMapper()
         {
-            CreateMap<CreateTimeSlotDTO, TimeInterval>();
+            CreateMap<CreateTimeIntervalDTO, TimeInterval>();
         }
     }
 }
