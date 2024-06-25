@@ -10,6 +10,6 @@ namespace AroundTheWorld.Application.DTO.TimeIntervals
     public class NewMapPointsDTO
     {
         public List<MapPoint> MapPoints { get; set; }
-        public Guid TimeIntervalId { get; set; }
+        public Guid ParentId { get; set; }
     }
 }

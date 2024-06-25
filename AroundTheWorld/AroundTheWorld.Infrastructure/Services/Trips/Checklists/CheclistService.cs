@@ -105,18 +105,30 @@ namespace AroundTheWorld.Infrastructure.Services.Trips.Checklists
             return checklist;
         }
 
-        public async Task<IQueryable<Checkpoint>> GetCheckpointsFromChecklist(Guid checkpointId)
+        public async Task<IQueryable<Checkpoint>> GetCheckpointsFromChecklist(Guid checklistId)
         {
-            var checklistExists = await _checklistRepository.ChecklistExistsAsync(checkpointId);
+            var checklistExists = await _checklistRepository.ChecklistExistsAsync(checklistId);
 
             if (!checklistExists)
             {
                 throw new NotFoundException("Чеклист с таким id не найден");
             }
 
-            var checkpoints = _checkpointRepository.GetCheckpointsByChecklistId(checkpointId);
+            var checkpoints = _checkpointRepository.GetCheckpointsByChecklistId(checklistId);
 
             return checkpoints;
+        }
+
+        public async Task DeleteChecklist(Guid checklistId)
+        {
+            var checklist = await _checklistRepository.GetByIdAsync(checklistId);
+
+            if (checklist == null)
+            {
+               throw new NotFoundException("Чеклиста с таким id не существует");
+            }
+
+            await _checklistRepository.DeleteAsync(checklist);
         }
     }
 }

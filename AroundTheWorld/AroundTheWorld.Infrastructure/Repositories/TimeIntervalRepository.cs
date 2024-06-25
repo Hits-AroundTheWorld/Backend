@@ -12,7 +12,7 @@ namespace AroundTheWorld.Infrastructure.Repositories
     public class TimeIntervalRepository : BaseRepository<TimeInterval>, ITimeIntervalRepository
     {
         private readonly AppDbContext _dbContext;
-        protected TimeIntervalRepository(AppDbContext dbContext) : base(dbContext)
+        public TimeIntervalRepository(AppDbContext dbContext) : base(dbContext)
         {
             _dbContext = dbContext;
         }
@@ -52,7 +52,8 @@ namespace AroundTheWorld.Infrastructure.Repositories
                 var timeIntervalMapPoint = new TimeIntervalMapPoint
                 {
                     ParentId = timeIntervalId,
-                    MapPoint = point
+                    XCoordinate = point.XCoordinate,
+                    YCoordinate = point.YCoordinate, 
                 };
                 timeIntervalMapPoints.Add(timeIntervalMapPoint);
             }

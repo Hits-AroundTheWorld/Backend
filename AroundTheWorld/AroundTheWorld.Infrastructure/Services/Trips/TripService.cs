@@ -143,7 +143,7 @@ namespace AroundTheWorld.Infrastructure.Services.Trips
 
                 foreach (var tripId in tripsIds)
                 {
-                    var trip = await _tripRepository.GetByTripIdAsync(tripId);
+                    var trip = await _tripRepository.GetByIdAsync(tripId);
                     if (trip != null)
                     {
                         applications.Add(trip);
@@ -291,7 +291,7 @@ namespace AroundTheWorld.Infrastructure.Services.Trips
             {
                 throw new NotFoundException("Запрос на поездку не найден.");
             }
-            var trip = await _tripRepository.GetByTripIdAsync(tripRequest.TripId);
+            var trip = await _tripRepository.GetByIdAsync(tripRequest.TripId);
             tripRequest.Status = infoDTO.Status;
             if(tripRequest.Status == UserRequestStatus.Approved)
             {

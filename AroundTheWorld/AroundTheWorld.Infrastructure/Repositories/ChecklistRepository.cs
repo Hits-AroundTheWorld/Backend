@@ -18,7 +18,7 @@ namespace AroundTheWorld.Infrastructure.Repositories
             var parentExist = await _dbContext.Checklists
                 .Where(cl => cl.Id == parentId)
                 .Select(cl => cl.ParentId)
-                .Union(_dbContext.Days
+                .Union(_dbContext.TimeIntervals
                     .Where(d => d.Id == parentId)
                     .Select(d => d.Id))
                 .AnyAsync();
@@ -55,6 +55,12 @@ namespace AroundTheWorld.Infrastructure.Repositories
             var checklistExists = await _dbContext.Checklists.Where(cl => cl.Id == checklistId).AnyAsync();
 
             return checklistExists;
+        }
+        public IQueryable<Checkpoint> GetCheckpointsByChecklistId(Guid checklistId)
+        {
+            var checkpoints = _dbContext.Checkpoints.Where(cl => cl.ChecklistId == checklistId);
+
+            return checkpoints;
         }
     }
 }

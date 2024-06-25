@@ -15,5 +15,7 @@ public static class Configure
         services.AddMediatR(config => config.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
         services.AddAutoMapper(typeof(UserMapper));
         services.AddAutoMapper(typeof(TripMapper));
+        services.AddAutoMapper(typeof(TimeIntervalMapper));
+        services.AddAutoMapper(typeof(ChecklistMapper));
     }
 }

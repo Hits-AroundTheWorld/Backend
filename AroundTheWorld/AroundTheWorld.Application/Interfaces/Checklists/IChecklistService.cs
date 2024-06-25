@@ -1,11 +1,5 @@
 ﻿using AroundTheWorld.Application.DTO.Checklist;
 using AroundTheWorld.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AroundTheWorld.Application.Interfaces.Checklists
 {
@@ -14,7 +8,8 @@ namespace AroundTheWorld.Application.Interfaces.Checklists
         public Task CreateChecklist(CreateChecklistDTO checklistDTO, Guid userId);
         public Task EditChecklist(EdtiChecklistDTO checklistInfo);
         public Task<IList<Checklist>> GetChecklistByParentId(Guid parentId);
-        public Task<IQueryable<Checkpoint>> GetCheckpointsFromChecklist(Guid checkpointId);
+        public Task<IQueryable<Checkpoint>> GetCheckpointsFromChecklist(Guid checklistId);
         public Task CheckpointActions(EditCheckpointsDTO checkpointDTO);
+        public Task DeleteChecklist(Guid checklistId);
     }
 }

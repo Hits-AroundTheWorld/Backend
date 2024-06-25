@@ -15,7 +15,6 @@ namespace AroundTheWorld.Infrastructure
         public DbSet<Checkpoint> Checkpoints { get; init; }
         public DbSet<TimeInterval> TimeIntervals { get; init; }
         public DbSet<TimeIntervalMapPoint> MapPoints { get; init; }
-
         
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
@@ -28,7 +27,7 @@ namespace AroundTheWorld.Infrastructure
             modelBuilder.Entity<TripAndUsers>()
                 .HasKey(e => new { e.TripId, e.UserId });
             modelBuilder.Entity<TimeIntervalMapPoint>()
-                .HasKey(e => new { e.ParentId, e.MapPoint });
+                .HasKey(e => new { e.ParentId, e.pointId });
         }
     }
 }

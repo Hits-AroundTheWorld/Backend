@@ -8,7 +8,9 @@ namespace AroundTheWorld.Domain.Entities
 {
     public class TimeIntervalMapPoint
     {
-        public MapPoint MapPoint { get; set; }
+        public Guid pointId { get; set; }
         public Guid ParentId { get; set; }
+        public Double XCoordinate { get; set; }
+        public Double YCoordinate { get; set; }
     }
 }

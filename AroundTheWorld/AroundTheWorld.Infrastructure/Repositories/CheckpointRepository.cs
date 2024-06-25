@@ -1,10 +1,5 @@
 ﻿using AroundTheWorld.Application.Interfaces.Checklists;
 using AroundTheWorld.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AroundTheWorld.Infrastructure.Repositories
 {
@@ -12,7 +7,7 @@ namespace AroundTheWorld.Infrastructure.Repositories
     {
 
         private readonly AppDbContext _dbContext;
-        protected CheckpointRepository(AppDbContext dbContext) : base(dbContext)
+        public CheckpointRepository(AppDbContext dbContext) : base(dbContext)
         {
             _dbContext = dbContext;
         }

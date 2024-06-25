@@ -58,6 +58,19 @@ namespace AroundTheWorld.Infrastructure.Services.Trips.TimeIntervals
             var intervals = _timeIntervalRepository.GetTimeIntervalsByTripId(tripId);
             return intervals;
         }
+
+        public async Task DeleteTimeInterval(Guid timeIntervalId)
+        {
+            var timeInterval = await _timeIntervalRepository.GetByIdAsync(timeIntervalId);
+
+            if (timeInterval == null)
+            {
+                throw new NotFoundException("Временного интервала с таким id не существует");
+            }
+
+            var intervals = _timeIntervalRepository.DeleteAsync(timeInterval);
+        }
+
         public async Task<GetTimeIntervalDTO> GetTripTimeInterval(Guid TimeIntervalId)
         {
 
@@ -81,20 +94,26 @@ namespace AroundTheWorld.Infrastructure.Services.Trips.TimeIntervals
 
         public async Task EditPointsOnMap(NewMapPointsDTO newMapPointsInfo)
         {
-            var timeIntervalExists = await _timeIntervalRepository.IsTimeIntervalExistsAsync(newMapPointsInfo.TimeIntervalId);
-            if (!timeIntervalExists)
-            {
-                throw new NotFoundException("Временной интервал с таким id не существует");
-            }
-            await _timeIntervalRepository.ClearAllMapPointsAsync(newMapPointsInfo.TimeIntervalId);
-            await _timeIntervalRepository.AddMapPointsAsync(newMapPointsInfo.MapPoints, newMapPointsInfo.TimeIntervalId);
+            await _timeIntervalRepository.ClearAllMapPointsAsync(newMapPointsInfo.ParentId);
+            await _timeIntervalRepository.AddMapPointsAsync(newMapPointsInfo.MapPoints, newMapPointsInfo.ParentId);
         }
 
-        private void ValidateDayDate(DateTime StartTime, DateTime EndTime, Guid tripId) //ПРОВАЛИДИРУЙ, ЧТОБЫ ЕСЛИ У ПОЕЗДКИ ЕСТЬ НАЧАЛО И КОНЕЦ, ТО ДНИ ТОЖЕ ДОЛЖНЫ БЫТЬ В ЭТИХ РАМКАХ
+        private async Task ValidateDayDate(DateTime StartTime, DateTime EndTime, Guid tripId)
         {
+
+            var trip = await _tripRepository.GetByIdAsync(tripId);  
+
+            if (trip == null)
+            {
+                throw new NotFoundException("Поездки с таким id не существует"); 
+            }
+
+            var notEarlierThenTripStart = StartTime > trip.StartDate;
+            var notAfterTripEnd = EndTime < trip.EndDate;
             var notEarlierThanNow = StartTime > DateTime.Now;
             var notTooMuch = (EndTime < DateTime.UtcNow.AddYears(100));
             var endMoreThanStart = EndTime > StartTime;
+
             if (notEarlierThanNow)
             {
                 throw new BadRequestException("Нельзя создать поездку в прошлое :( ");
@@ -107,6 +126,12 @@ namespace AroundTheWorld.Infrastructure.Services.Trips.TimeIntervals
             {
                 throw new BadRequestException("Старт поездки не может быть после её конца");
             }
+            if (!notEarlierThenTripStart || !notAfterTripEnd)
+            {
+                throw new BadRequestException("Сроки не могут выходить за пределы поездки");
+            }
         }
+
+
     }
 }
