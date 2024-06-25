@@ -7,18 +7,6 @@ using AroundTheWorld.Domain.Entities;
 using AroundTheWorld.Domain.Entities.Enums;
 using AroundTheWorld.Infrastructure.Helpers.TripValidation;
 using AutoMapper;
-using MediatR;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualBasic;
-using Pipelines.Sockets.Unofficial.Buffers;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AroundTheWorld.Infrastructure.Services.Trips
 {

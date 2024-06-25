@@ -9,6 +9,7 @@ namespace AroundTheWorld.Application.Helpers.AutoMapper
         public UserMapper()
         {
             CreateMap<User, ProfileInfoDTO>();
+            CreateMap<User, GetUserDTO>();
             CreateMap<RegisterInfoDTO, User>();
         }
     }

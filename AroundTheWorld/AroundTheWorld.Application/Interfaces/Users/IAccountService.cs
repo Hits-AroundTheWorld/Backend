@@ -11,5 +11,6 @@ namespace AroundTheWorld.Application.Interfaces.Users
     {
         public Task EditProfile(EditProfileDTO editProfileCreds, Guid userId);
         public Task<ProfileInfoDTO> GetProfile(Guid userId);
+        public Task<GetUsersDTO> GetAllAusers(GetUsersFilterDTO filters);
     }
 }
