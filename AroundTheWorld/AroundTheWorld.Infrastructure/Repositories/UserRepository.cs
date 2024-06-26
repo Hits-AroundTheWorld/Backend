@@ -16,5 +16,16 @@ namespace AroundTheWorld.Infrastructure.Repositories
         {
             return await _dbContext.Users.FirstOrDefaultAsync(u => u.Email == email);
         }
+
+        public IQueryable<User> GetUsersByFullName(string? fullName)
+        {
+            var query = _dbContext.Users.AsQueryable();
+
+            if (fullName != null) {
+                query = query.Where(user => user.FullName.Contains(fullName));
+            }
+
+            return query;
+        }
     }
 }

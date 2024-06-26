@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AroundTheWorld.Domain.Entities
 {
-    public class TripDays
+    public class TripTimeInterval
     {
         public Guid TripId { get; set; }
         public DateTime Day { get; set; }

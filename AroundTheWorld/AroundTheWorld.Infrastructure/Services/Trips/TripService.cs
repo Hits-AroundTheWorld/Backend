@@ -7,18 +7,6 @@ using AroundTheWorld.Domain.Entities;
 using AroundTheWorld.Domain.Entities.Enums;
 using AroundTheWorld.Infrastructure.Helpers.TripValidation;
 using AutoMapper;
-using MediatR;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualBasic;
-using Pipelines.Sockets.Unofficial.Buffers;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AroundTheWorld.Infrastructure.Services.Trips
 {
@@ -143,7 +131,7 @@ namespace AroundTheWorld.Infrastructure.Services.Trips
 
                 foreach (var tripId in tripsIds)
                 {
-                    var trip = await _tripRepository.GetByTripIdAsync(tripId);
+                    var trip = await _tripRepository.GetByIdAsync(tripId);
                     if (trip != null)
                     {
                         applications.Add(trip);
@@ -291,7 +279,7 @@ namespace AroundTheWorld.Infrastructure.Services.Trips
             {
                 throw new NotFoundException("Запрос на поездку не найден.");
             }
-            var trip = await _tripRepository.GetByTripIdAsync(tripRequest.TripId);
+            var trip = await _tripRepository.GetByIdAsync(tripRequest.TripId);
             tripRequest.Status = infoDTO.Status;
             if(tripRequest.Status == UserRequestStatus.Approved)
             {

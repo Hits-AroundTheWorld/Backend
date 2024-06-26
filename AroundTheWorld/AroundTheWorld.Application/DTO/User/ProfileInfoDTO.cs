@@ -9,6 +9,8 @@ namespace AroundTheWorld.Application.DTO.User
     public class ProfileInfoDTO
     {
         public string FullName { get; set; }
+        public string BirthDate { get; set; }
+        public string PhoneNumber { get; set; }
         public string Email { get; set; }
         public float Rating { get; set; }
         public string AboutMe { get; set; }
