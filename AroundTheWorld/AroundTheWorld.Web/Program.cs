@@ -1,7 +1,13 @@
 using AroundTheWorld.Web.Configure;
 using AroundTheWorld.Infrastructure;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddControllers().AddJsonOptions(opts =>
+{
+    var enumConverter = new JsonStringEnumConverter();
+    opts.JsonSerializerOptions.Converters.Add(enumConverter);
+});
 
 
 builder.Services.AddControllers();

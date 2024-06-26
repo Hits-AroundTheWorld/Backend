@@ -1,8 +1,15 @@
 ﻿using AroundTheWorld.Application.Interfaces;
+using AroundTheWorld.Application.Interfaces.Checklists;
+using AroundTheWorld.Application.Interfaces.Days;
+using AroundTheWorld.Application.Interfaces.TimeIntervals;
+using AroundTheWorld.Application.Interfaces.Trips;
 using AroundTheWorld.Application.Interfaces.Users;
 using AroundTheWorld.Infrastructure.Policies;
 using AroundTheWorld.Infrastructure.Repositories;
 using AroundTheWorld.Infrastructure.Services;
+using AroundTheWorld.Infrastructure.Services.Trips;
+using AroundTheWorld.Infrastructure.Services.Trips.Checklists;
+using AroundTheWorld.Infrastructure.Services.Trips.TimeIntervals;
 using AroundTheWorld.Infrastructure.Services.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -42,6 +49,11 @@ namespace AroundTheWorld.Infrastructure
         private static void AddRepositories(this IServiceCollection services)
         {
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ITripRepository, TripRepository>();
+            services.AddScoped<ITimeIntervalRepository, TimeIntervalRepository>();
+            services.AddScoped<IChecklistsRepository, ChecklistRepository>();
+            services.AddScoped<ICheckpointRepository, CheckpointRepository>();
+            services.AddScoped<ITripAndUsersRepository, TripAndUsersRepository>();
             services.AddScoped<TokenBlacklistFilterAttribute>();
         }
         private static void AddServices(this IServiceCollection services)
@@ -49,8 +61,11 @@ namespace AroundTheWorld.Infrastructure
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IJwtService, JwtService>();
+            services.AddScoped<IChecklistService, CheclistService>();
+            services.AddScoped<ITimeIntervalService, TimeIntervalService>();
+            services.AddScoped<ITripService, TripService>();
             services.AddSingleton<TokenProps>();
-        } 
+        }
     }
 }
 

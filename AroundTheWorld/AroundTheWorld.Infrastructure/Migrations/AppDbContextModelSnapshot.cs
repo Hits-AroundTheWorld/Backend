@@ -22,6 +22,50 @@ namespace AroundTheWorld.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("AroundTheWorld.Domain.Entities.Checklist", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ParentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Text")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdateTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Checklists");
+                });
+
+            modelBuilder.Entity("AroundTheWorld.Domain.Entities.Checkpoint", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ChecklistId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsChecked")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Checkpoints");
+                });
+
             modelBuilder.Entity("AroundTheWorld.Domain.Entities.CompanionsPair", b =>
                 {
                     b.Property<Guid>("FirstCompanion")
@@ -30,9 +74,140 @@ namespace AroundTheWorld.Infrastructure.Migrations
                     b.Property<Guid>("SecondCompanion")
                         .HasColumnType("uuid");
 
+                    b.Property<double>("Rating")
+                        .HasColumnType("double precision");
+
                     b.HasKey("FirstCompanion", "SecondCompanion");
 
                     b.ToTable("Companions");
+                });
+
+            modelBuilder.Entity("AroundTheWorld.Domain.Entities.TimeInterval", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("IntervalEnd")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("IntervalStart")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Text")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("TripId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TimeIntervals");
+                });
+
+            modelBuilder.Entity("AroundTheWorld.Domain.Entities.TimeIntervalMapPoint", b =>
+                {
+                    b.Property<Guid>("ParentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("pointId")
+                        .HasColumnType("uuid");
+
+                    b.Property<double>("XCoordinate")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("YCoordinate")
+                        .HasColumnType("double precision");
+
+                    b.HasKey("ParentId", "pointId");
+
+                    b.ToTable("MapPoints");
+                });
+
+            modelBuilder.Entity("AroundTheWorld.Domain.Entities.Trip", b =>
+                {
+                    b.Property<Guid>("TripId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<double?>("FinishXCoordinate")
+                        .HasColumnType("double precision");
+
+                    b.Property<double?>("FinishYCoordinate")
+                        .HasColumnType("double precision");
+
+                    b.Property<string>("InvitationLink")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsPublic")
+                        .HasColumnType("boolean");
+
+                    b.Property<int?>("MaxBudget")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MaxPeopleCount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PeopleCountNow")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<double?>("StartXCoordinate")
+                        .HasColumnType("double precision");
+
+                    b.Property<double?>("StartYCoordinate")
+                        .HasColumnType("double precision");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("TripFounderFullName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("TripFounderId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("TripMiniDescription")
+                        .HasColumnType("text");
+
+                    b.Property<string>("TripName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("TripId");
+
+                    b.ToTable("Trips");
+                });
+
+            modelBuilder.Entity("AroundTheWorld.Domain.Entities.TripAndUsers", b =>
+                {
+                    b.Property<Guid>("TripId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.HasKey("TripId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("TripAndUsers");
                 });
 
             modelBuilder.Entity("AroundTheWorld.Domain.Entities.User", b =>
@@ -73,6 +248,25 @@ namespace AroundTheWorld.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("AroundTheWorld.Domain.Entities.TripAndUsers", b =>
+                {
+                    b.HasOne("AroundTheWorld.Domain.Entities.Trip", "Trip")
+                        .WithMany()
+                        .HasForeignKey("TripId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AroundTheWorld.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Trip");
+
+                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }
