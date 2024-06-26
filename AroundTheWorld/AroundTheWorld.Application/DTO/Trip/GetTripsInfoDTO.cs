@@ -23,6 +23,7 @@ namespace AroundTheWorld.Application.DTO.Trip
         public string? InvitationLink { get; set; }
         public int? MaxBudget { get; set; }
         public int MaxPeopleCount { get; set; }
+        public int PeopleCountNow { get; set; }
         public DateTime CreatedTime { get; set; }
 
     }

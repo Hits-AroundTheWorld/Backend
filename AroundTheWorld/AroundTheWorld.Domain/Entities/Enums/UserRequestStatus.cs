@@ -11,6 +11,7 @@ namespace AroundTheWorld.Domain.Entities.Enums
         InQueue,
         Approved,
         Rejected,
+        DeletedRequest,
         LeftFromTrip
     }
 }

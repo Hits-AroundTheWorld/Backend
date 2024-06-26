@@ -403,5 +403,27 @@ namespace AroundTheWorld.Infrastructure.Services.Trips
             }
             await _tripRepository.DeleteAsync(trip);
         }
+
+        public async Task<List<GetMyRequestsDTO>> GetMyRequests(Guid userId)
+        {
+            var userRequests = await _tripAndUsersRepository.GetUserRequests(userId);
+            if(userRequests == null)
+            {
+                throw new NotFoundException("У вас нет действующих поездок!");
+            }
+            var requestsDtoList = _mapper.Map<List<TripAndUsers>, List<GetMyRequestsDTO>>(userRequests);
+
+            return requestsDtoList;
+        }
+
+        public async Task RemoveTripRequest(Guid userId, Guid tripId)
+        {
+            var trip = await _tripAndUsersRepository.GetRequestByIdAsync(userId, tripId);
+            if (trip == null)
+            {
+                throw new NotFoundException("Такой поездки не существует!");
+            }
+            await _tripAndUsersRepository.DeleteAsync(trip);
+        }
     }
 }

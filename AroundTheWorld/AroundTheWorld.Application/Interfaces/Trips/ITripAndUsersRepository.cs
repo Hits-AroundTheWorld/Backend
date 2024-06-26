@@ -15,5 +15,6 @@ namespace AroundTheWorld.Application.Interfaces.Trips
         public Task<List<Guid>?> GetUserTrips(Guid userId);
         public Task<List<TripAndUsers>?> GetUsersFromTrip(Guid tripId);
         public Task<List<TripAndUsers>?> GetRequests(Guid tripId);
+        public Task<List<TripAndUsers>?> GetUserRequests(Guid userId);
     }
 }
