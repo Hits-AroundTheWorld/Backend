@@ -21,6 +21,7 @@ builder.Services.ConfigurePresentationLayer(builder.Configuration);
 
 var app = builder.Build();
 
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -34,6 +35,11 @@ app.Services.AddAutoMigration();
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+app.UseCors(x => x
+    .AllowAnyMethod()
+    .AllowAnyHeader()
+    .AllowCredentials()
+    .SetIsOriginAllowed(origin => true));
 
 app.MapControllers();
 
