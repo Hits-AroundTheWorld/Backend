@@ -15,7 +15,7 @@ namespace AroundTheWorld.Application.Interfaces.Days
     {
         public IQueryable<TimeInterval> GetTimeIntervalsByTripId(Guid tripId);
         public Task<bool> IsTimeIntervalExistsAsync(Guid timeIntervalId);
-        public Task<List<TimeIntervalMapPoint>> GetMapPointsByIntervalIdAsync(Guid timeIntervalId);
+        public Task<List<MapPoint>> GetMapPointsByIntervalIdAsync(Guid timeIntervalId);
         public Task ClearAllMapPointsAsync(Guid timeIntervalId);
         public Task AddMapPointsAsync(List<MapPoint> mapPointsList, Guid timeIntervalId);
     }

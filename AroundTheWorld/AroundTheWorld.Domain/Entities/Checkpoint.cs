@@ -11,6 +11,7 @@ namespace AroundTheWorld.Domain.Entities
         public Guid Id { get; set; }
         public Guid ChecklistId { get; set; }
         public string Text { get; set; }
+        public int NumberOfItems { get; set; } = 1;
         public bool IsChecked { get; set; }
     }
 }

@@ -20,9 +20,10 @@ namespace AroundTheWorld.Application.Interfaces.Trips
         public Task ChangeTripStatus(Guid userId, ChangeTripStatusInfoDTO infoDTO);
         public Task LeaveFromTrip(Guid userId, Guid tripId);
         public Task RemoveTripRequest(Guid userId, Guid tripId);
-        public Task<IQueryable<GetUsersFromTripInfoDTO>> GetUsersFromTrip(Guid tripId);
+        public Task<IQueryable<GetUserDTO>> GetUsersFromTrip(Guid tripId);
         public Task<GetTripRequestsInfoDTO> GetTripRequests(int size, int page,Guid tripId);
         public Task RemoveTrip(Guid userId, Guid tripId);
         public Task<List<GetMyRequestsDTO>> GetMyRequests(Guid userId);
+        public Task<GetTripDTO> GetTripById(Guid tripId);
     }
 }

@@ -39,19 +39,21 @@ namespace AroundTheWorld.Infrastructure.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<List<TimeIntervalMapPoint>> GetMapPointsByIntervalIdAsync(Guid timeIntervalId)
+        public async Task<List<MapPoint>> GetMapPointsByIntervalIdAsync(Guid timeIntervalId)
         {
             var mapPoints = await _dbContext.MapPoints.Where(mp => mp.ParentId == timeIntervalId).ToListAsync();
             return mapPoints;
         }
         public async Task AddMapPointsAsync(List<MapPoint> mapPointsList, Guid timeIntervalId)
         {
-            List<TimeIntervalMapPoint> timeIntervalMapPoints = new List<TimeIntervalMapPoint>();
+            List<MapPoint> timeIntervalMapPoints = new List<MapPoint>();
             foreach (var point in mapPointsList)
             {
-                var timeIntervalMapPoint = new TimeIntervalMapPoint
+                var timeIntervalMapPoint = new MapPoint
                 {
                     ParentId = timeIntervalId,
+                    Description = point.Description,
+                    Title = point.Title,
                     XCoordinate = point.XCoordinate,
                     YCoordinate = point.YCoordinate, 
                 };

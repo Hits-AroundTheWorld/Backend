@@ -8,7 +8,7 @@ namespace AroundTheWorld.Application.DTO.Trip
 {
     public class GetQuerybleTripsInfoDTO
     {
-        public IQueryable<GetTripsInfoDTO> Trips { get; set; }
+        public IQueryable<TripInfoDTO> Trips { get; set; }
         public PaginationInfoDTO Pagination { get; set; }
     }
 }

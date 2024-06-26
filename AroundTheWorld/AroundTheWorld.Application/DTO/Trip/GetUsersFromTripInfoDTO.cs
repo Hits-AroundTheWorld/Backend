@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AroundTheWorld.Application.DTO.Trip
 {
-    public class GetUsersFromTripInfoDTO
+    public class GetUserDTO
     {
         public Guid Id { get; set; }
         public string FullName { get; set; }
