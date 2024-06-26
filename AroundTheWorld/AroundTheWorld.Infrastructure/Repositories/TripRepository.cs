@@ -72,5 +72,10 @@ namespace AroundTheWorld.Infrastructure.Repositories
             await _dbContext.MapPoints.AddRangeAsync(tripMapPoints);
             await _dbContext.SaveChangesAsync();
         }
+
+        public async Task<Trip?> GetTripByInviteCode(string inviteCode)
+        {
+            return await _dbContext.Trips.FirstOrDefaultAsync(t => t.InvitationLink == inviteCode);
+        }
     }
 }
