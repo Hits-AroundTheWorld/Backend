@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AroundTheWorld.Application.DTO.User
+namespace AroundTheWorld.Application.DTO.Trip
 {
-    public class GetUserDTO: ProfileInfoDTO
+    public class InviteCodeInfoDTO
     {
-        public Guid Id { get; set;}
+        public string InviteCode { get; set; }
     }
 }

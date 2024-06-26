@@ -1,4 +1,5 @@
-﻿using AroundTheWorld.Application.Interfaces.Days;
+﻿using AroundTheWorld.Application.Exceptions;
+using AroundTheWorld.Application.Interfaces.Days;
 using AroundTheWorld.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -44,14 +45,16 @@ namespace AroundTheWorld.Infrastructure.Repositories
             var mapPoints = await _dbContext.MapPoints.Where(mp => mp.ParentId == timeIntervalId).ToListAsync();
             return mapPoints;
         }
-        public async Task AddMapPointsAsync(List<MapPoint> mapPointsList, Guid timeIntervalId)
+        public async Task AddMapPointsAsync(List<MapPoint> mapPointsList, Guid parentId)
         {
+
             List<MapPoint> timeIntervalMapPoints = new List<MapPoint>();
             foreach (var point in mapPointsList)
             {
                 var timeIntervalMapPoint = new MapPoint
                 {
-                    ParentId = timeIntervalId,
+                    pointId = point.pointId,
+                    ParentId = parentId,
                     Description = point.Description,
                     Title = point.Title,
                     XCoordinate = point.XCoordinate,

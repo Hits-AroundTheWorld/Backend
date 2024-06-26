@@ -81,6 +81,7 @@ namespace AroundTheWorld.Infrastructure.Services.Users
 
             var newUser = _mapper.Map<User>(registerCreds);
             newUser.Password = BCrypt.Net.BCrypt.HashPassword(registerCreds.Password);
+            newUser.Id = Guid.NewGuid();
 
             await _userRepository.AddAsync(newUser);
 

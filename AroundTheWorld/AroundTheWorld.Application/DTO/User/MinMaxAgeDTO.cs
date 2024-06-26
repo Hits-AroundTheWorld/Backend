@@ -8,7 +8,7 @@ namespace AroundTheWorld.Application.DTO.User
 {
     public class MinMaxAgeDTO
     {
-        public int MaxAge { get; set;}
+        public int MaxAge { get; set; } = 200;
         public int MinAge { get; set;}
     }
 }

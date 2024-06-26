@@ -8,7 +8,7 @@ namespace AroundTheWorld.Application.DTO.User
 {
     public class GetUsersDTO
     {
-        public IList<GetUserDTO> Users { get; set; }
+        public IList<ProfileInfoDTO> Users { get; set; }
         public PaginationInfoDTO Pagination { get; set; }
     }
 }

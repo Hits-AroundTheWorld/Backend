@@ -43,28 +43,40 @@ namespace AroundTheWorld.Infrastructure.Services.Trips
             {
                 throw new BadRequestException("Вы не можете сделать максимальный бюджет меньше 0!");
             }
+
+            string invitationLink = GenerateRandomString(8);
             var newTrip = _mapper.Map<Trip>(createTripCreds);
             newTrip.TripFounderId = userId;
             newTrip.TripFounderFullName = user.FullName;
-            newTrip.CreatedTime = DateTime.UtcNow; 
+            newTrip.CreatedTime = DateTime.UtcNow;
             newTrip.PeopleCountNow = 1;
             newTrip.Status = TripStatus.WaitingForStart;
+            newTrip.InvitationLink = invitationLink;
             await _tripRepository.AddAsync(newTrip);
         }
 
-        public async Task EditTrip(Guid userId,Guid tripId, EditTripInfoDTO editTripCreds)
+        private string GenerateRandomString(int length)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_-";
+            var random = new Random();
+            return new string(Enumerable.Repeat(chars, length)
+              .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
+
+
+        public async Task EditTrip(Guid userId, Guid tripId, EditTripInfoDTO editTripCreds)
         {
             var user = await _userRepository.GetByIdAsync(userId);
             if (user == null)
             {
                 throw new NotFoundException("Такого пользователя не существует");
             }
-            var trip= await _tripRepository.GetTripById(userId, tripId); 
+            var trip = await _tripRepository.GetTripById(userId, tripId);
             if (trip == null)
             {
                 throw new BadRequestException("Вы не можете менять информацию не своей поездки");
             }
-            if (editTripCreds.StartDate != null) 
+            if (editTripCreds.StartDate != null)
             {
                 var errorHandler = ValidationTripInfo.ValidateTripDate(editTripCreds.StartDate, trip.EndDate);
                 if (errorHandler != string.Empty)
@@ -88,17 +100,17 @@ namespace AroundTheWorld.Infrastructure.Services.Trips
             {
                 trip.TripMiniDescription = editTripCreds.TripMiniDescription;
             }
-            if(editTripCreds.IsPublic != null)
+            if (editTripCreds.IsPublic != null)
             {
                 trip.IsPublic = editTripCreds.IsPublic;
             }
-            if(editTripCreds.TripName != null)
+            if (editTripCreds.TripName != null)
             {
-                trip.TripName  = editTripCreds.TripName;    
+                trip.TripName = editTripCreds.TripName;
             }
-            if(editTripCreds.MaxPeopleCount != null)
+            if (editTripCreds.MaxPeopleCount != null)
             {
-                if(editTripCreds.MaxPeopleCount < trip.PeopleCountNow)
+                if (editTripCreds.MaxPeopleCount < trip.PeopleCountNow)
                 {
                     throw new BadRequestException("Вы не можете указать максимальное количество людей меньше, чем их сейчас!");
                 }
@@ -212,7 +224,7 @@ namespace AroundTheWorld.Infrastructure.Services.Trips
             }
 
             var applicationsQueryable = applications.AsQueryable();
-            if(userId != null)
+            if (userId != null)
             {
                 applicationsQueryable = applicationsQueryable.Where(aR => aR.TripFounderId == userId);
             }
@@ -254,15 +266,15 @@ namespace AroundTheWorld.Infrastructure.Services.Trips
 
             return applicationsDTO;
         }
-        public async  Task ApplyForTrip(Guid tripId, Guid userId)
+        public async Task ApplyForTrip(Guid tripId, Guid userId)
         {
             bool isFounder = await _tripRepository.IsFounder(userId, tripId);
-            if(isFounder == true)
+            if (isFounder == true)
             {
                 throw new BadRequestException("Вы не можете подавать заявки на свою же поездку!");
             }
             var request = await _tripAndUsersRepository.GetRequestByIdAsync(tripId, userId);
-            if(request != null)
+            if (request != null)
             {
                 throw new BadRequestException("Вы не можете подать несколько раз на одну поездку!");
             }
@@ -276,7 +288,7 @@ namespace AroundTheWorld.Infrastructure.Services.Trips
             await _tripAndUsersRepository.AddAsync(newRequest);
         }
 
-        public async Task ChangeTripRequestStatus(Guid ownerId ,ChangeRequestStatusInfoDTO infoDTO)
+        public async Task ChangeTripRequestStatus(Guid ownerId, ChangeRequestStatusInfoDTO infoDTO)
         {
             bool isFounder = await _tripRepository.IsFounder(ownerId, infoDTO.TripId);
             if (!isFounder)
@@ -290,12 +302,26 @@ namespace AroundTheWorld.Infrastructure.Services.Trips
             }
             var trip = await _tripRepository.GetByIdAsync(tripRequest.TripId);
             tripRequest.Status = infoDTO.Status;
-            if(tripRequest.Status == UserRequestStatus.Approved)
+            if (tripRequest.Status == UserRequestStatus.Approved)
             {
-                trip.PeopleCountNow+=1;
-                await _tripRepository.UpdateAsync(trip);    
+                if(trip.PeopleCountNow == trip.MaxPeopleCount)
+                {
+                    throw new BadRequestException("Количество людей уже слишком много вы не можете добавить еще!");
+                }
+                trip.PeopleCountNow += 1;
+                await _tripRepository.UpdateAsync(trip);
+                await _tripAndUsersRepository.UpdateAsync(tripRequest);
             }
-            await _tripAndUsersRepository.UpdateAsync(tripRequest);
+            else if(tripRequest.Status == UserRequestStatus.LeftFromTrip)
+            {
+                trip.PeopleCountNow -= 1;
+                await _tripRepository.UpdateAsync(trip);
+                await _tripAndUsersRepository.DeleteAsync(tripRequest);
+            }
+            else
+            {
+                await _tripAndUsersRepository.UpdateAsync(tripRequest);
+            }
         }
 
         public async Task ChangeTripStatus(Guid userId, ChangeTripStatusInfoDTO infoDTO)
@@ -307,15 +333,15 @@ namespace AroundTheWorld.Infrastructure.Services.Trips
             }
             trip.Status = infoDTO.TripStatus;
             await _tripRepository.UpdateAsync(trip);
-            if(infoDTO.TripStatus == TripStatus.InProccess)
+            if (infoDTO.TripStatus == TripStatus.InProccess)
             {
                 var allTrips = await _tripRepository.GetTripsAsync();
-                if(allTrips == null)
+                if (allTrips == null)
                 {
                     throw new BadRequestException("На данный момент не существует в пуле поездок)");
                 }
-                var relatedTimeTrips =  allTrips.Where(aT => aT.StartDate >= trip.StartDate && aT.EndDate <= trip.EndDate && aT.TripId != trip.TripId);
-                foreach(var relTrip in relatedTimeTrips) {
+                var relatedTimeTrips = allTrips.Where(aT => aT.StartDate >= trip.StartDate && aT.EndDate <= trip.EndDate && aT.TripId != trip.TripId);
+                foreach (var relTrip in relatedTimeTrips) {
                     var usersTrip = await _tripAndUsersRepository.GetTripById(relTrip.TripId);
                     usersTrip.Status = UserRequestStatus.Rejected;
                     await _tripAndUsersRepository.UpdateAsync(usersTrip);
@@ -326,12 +352,12 @@ namespace AroundTheWorld.Infrastructure.Services.Trips
         public async Task LeaveFromTrip(Guid userId, Guid tripId)
         {
             var trip = await _tripAndUsersRepository.GetRequestByIdAsync(userId, tripId);
-            if(trip == null)
+            if (trip == null)
             {
                 throw new NotFoundException("Такой поездки не существует!");
             }
             trip.Status = UserRequestStatus.LeftFromTrip;
-            await _tripAndUsersRepository.UpdateAsync(trip);
+            await _tripAndUsersRepository.DeleteAsync(trip);
         }
 
         public async Task<IQueryable<GetTripUsersDTO>> GetUsersFromTrip(Guid tripId)
@@ -401,12 +427,12 @@ namespace AroundTheWorld.Infrastructure.Services.Trips
             {
                 throw new NotFoundException("Такая поездка не найдена, либо вы не являетесь ее владельцем!");
             }
-            if(trip.Status == TripStatus.InProccess || trip.Status == TripStatus.Ended)
+            if (trip.Status == TripStatus.InProccess || trip.Status == TripStatus.Ended)
             {
                 throw new BadRequestException("Вы не можете удалить начатую или поездку которая закончилась!");
             }
             var usersWithTrip = await _tripAndUsersRepository.GetUsersFromTrip(tripId);
-            foreach(var user in usersWithTrip)
+            foreach (var user in usersWithTrip)
             {
                 await _tripAndUsersRepository.DeleteAsync(user);
             }
@@ -416,7 +442,7 @@ namespace AroundTheWorld.Infrastructure.Services.Trips
         public async Task<List<GetMyRequestsDTO>> GetMyRequests(Guid userId)
         {
             var userRequests = await _tripAndUsersRepository.GetUserRequests(userId);
-            if(userRequests == null)
+            if (userRequests == null)
             {
                 throw new NotFoundException("У вас нет действующих поездок!");
             }
@@ -446,6 +472,33 @@ namespace AroundTheWorld.Infrastructure.Services.Trips
                 throw new NotFoundException("Такой поездки не существует!");
             }
             await _tripAndUsersRepository.DeleteAsync(trip);
+        }
+
+        public async Task LoginTripByInvite(Guid userId, InviteCodeInfoDTO infoDTO)
+        {
+            var trip = await _tripRepository.GetTripByInviteCode(infoDTO.InviteCode);
+            if (trip == null)
+            {
+                throw new NotFoundException("Такая поездка уже недоступна");
+            }
+            bool isFounder = await _tripRepository.IsFounder(userId, trip.TripId);
+            if (isFounder == true)
+            {
+                throw new BadRequestException("Вы не можете подавать заявки на свою же поездку!");
+            }
+            var request = await _tripAndUsersRepository.GetRequestByIdAsync(trip.TripId, userId);
+            if (request != null)
+            {
+                throw new BadRequestException("Вы не можете подать несколько раз на одну поездку!");
+            }
+            var creds = new ApplyForTripInfoDTO
+            {
+                TripId = trip.TripId,
+                UserId = userId
+            };
+            var newRequest = _mapper.Map<TripAndUsers>(creds);
+            newRequest.Status = UserRequestStatus.Approved;
+            await _tripAndUsersRepository.AddAsync(newRequest);
         }
     }
 }
