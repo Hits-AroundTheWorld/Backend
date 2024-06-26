@@ -70,7 +70,7 @@ namespace AroundTheWorld.Web.Controllers
             var tripIntervals = await Mediator.Send(getTripTimeIntervalsQuery);
             return Ok(tripIntervals);
         }
-        [HttpGet("{timeIntervalId}")]
+        [HttpGet("{timeIntervalId}/get-trip-intervals")]
         [Authorize]
         [ServiceFilter(typeof(TokenBlacklistFilterAttribute))]
         [ProducesResponseType(typeof(GetTimeIntervalDTO), 200)]
