@@ -156,7 +156,7 @@ namespace AroundTheWorld.Web.Controllers
             await Mediator.Send(removeTripRequest);
             return Ok();
         }
-        [HttpGet("/users/{tripId}")]
+        [HttpGet("users/{tripId}")]
         [Authorize]
         [ServiceFilter(typeof(TokenBlacklistFilterAttribute))]
         [ProducesResponseType(typeof(IQueryable<GetTripUsersDTO>),200)]
@@ -171,7 +171,7 @@ namespace AroundTheWorld.Web.Controllers
             return Ok(result);
         }
 
-        [HttpGet("/{tripId}")]
+        [HttpGet("{tripId}")]
         [Authorize]
         [ServiceFilter(typeof(TokenBlacklistFilterAttribute))]
         [ProducesResponseType(typeof(GetTripDTO), 200)]
