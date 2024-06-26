@@ -8,5 +8,5 @@ using System.Threading.Tasks;
 
 namespace AroundTheWorld.Application.Communication.Queries.Trip.GetUsersFromTrip
 {
-    public record class GetUsersFromTripQuery(Guid tripId) :IRequest<IQueryable<GetUserDTO>>;
+    public record class GetUsersFromTripQuery(Guid tripId) :IRequest<IQueryable<GetTripUsersDTO>>;
 }

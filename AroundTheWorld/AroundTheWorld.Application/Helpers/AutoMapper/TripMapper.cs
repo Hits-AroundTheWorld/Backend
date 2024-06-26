@@ -8,9 +8,9 @@ namespace AroundTheWorld.Application.Helpers.AutoMapper
     {
         public TripMapper() { 
             CreateMap<CreateTripInfoDTO, Trip>();
-            CreateMap<Trip, GetTripsInfoDTO>();
+            CreateMap<Trip, TripInfoDTO>();
             CreateMap<ApplyForTripInfoDTO, TripAndUsers>();
-            CreateMap<User, GetUsersFromTripInfoDTO>();
+            CreateMap<User, GetTripUsersDTO>();
             CreateMap<TripAndUsers, RequestsInfoDTO>();
             CreateMap<TripAndUsers, GetMyRequestsDTO>();
         }

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace AroundTheWorld.Application.Communication.Queries.Trip.GetUsersFromTrip
 {
-    public class GetUsersFromTripQueryHandler : IRequestHandler<GetUsersFromTripQuery, IQueryable<GetUserDTO>>
+    public class GetUsersFromTripQueryHandler : IRequestHandler<GetUsersFromTripQuery, IQueryable<GetTripUsersDTO>>
     {
 
         private readonly ITripService _tripService;
@@ -19,7 +19,7 @@ namespace AroundTheWorld.Application.Communication.Queries.Trip.GetUsersFromTrip
             _tripService = tripService;
         }
 
-        public async Task<IQueryable<GetUserDTO>> Handle(GetUsersFromTripQuery request, CancellationToken cancellationToken)
+        public async Task<IQueryable<GetTripUsersDTO>> Handle(GetUsersFromTripQuery request, CancellationToken cancellationToken)
         {
             var users = await _tripService.GetUsersFromTrip(request.tripId);
             return users;

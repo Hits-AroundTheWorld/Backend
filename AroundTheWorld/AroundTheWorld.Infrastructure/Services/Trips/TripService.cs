@@ -31,18 +31,27 @@ namespace AroundTheWorld.Infrastructure.Services.Trips
                 throw new NotFoundException("Такого пользователя не существует");
             }
             var errorHandler = ValidationTripInfo.ValidateTripDate(createTripCreds.StartDate, createTripCreds.EndDate);
-            if ( errorHandler != string.Empty)
+            if (errorHandler != string.Empty)
             {
                 throw new BadRequestException($"{errorHandler}");
+            }
+            if (createTripCreds.MaxPeopleCount < 2)
+            {
+                throw new BadRequestException("Вы не можете ограничиться 2 людьми!");
+            }
+            if (createTripCreds.MaxBudget < 0)
+            {
+                throw new BadRequestException("Вы не можете сделать максимальный бюджет меньше 0!");
             }
             var newTrip = _mapper.Map<Trip>(createTripCreds);
             newTrip.TripFounderId = userId;
             newTrip.TripFounderFullName = user.FullName;
-            newTrip.CreatedTime = DateTime.UtcNow;
+            newTrip.CreatedTime = DateTime.UtcNow; 
             newTrip.PeopleCountNow = 1;
             newTrip.Status = TripStatus.WaitingForStart;
             await _tripRepository.AddAsync(newTrip);
         }
+
         public async Task EditTrip(Guid userId,Guid tripId, EditTripInfoDTO editTripCreds)
         {
             var user = await _userRepository.GetByIdAsync(userId);
@@ -148,7 +157,7 @@ namespace AroundTheWorld.Infrastructure.Services.Trips
 
             if (tripName != null)
             {
-                applicationsQueryable = applicationsQueryable.Where(aR => aR.TripName.Contains(tripName));
+                applicationsQueryable = applicationsQueryable.Where(aR => aR.TripName.ToLower().Contains(tripName.ToLower()));
             }
             if (tripDate != null)
             {
@@ -209,7 +218,7 @@ namespace AroundTheWorld.Infrastructure.Services.Trips
             }
             if (tripName != null)
             {
-                applicationsQueryable = applicationsQueryable.Where(aR => aR.TripName.Contains(tripName));
+                applicationsQueryable = applicationsQueryable.Where(aR => aR.TripName.ToLower().Contains(tripName.ToLower()));
             }
             if (tripDate != null)
             {
@@ -325,16 +334,16 @@ namespace AroundTheWorld.Infrastructure.Services.Trips
             await _tripAndUsersRepository.UpdateAsync(trip);
         }
 
-        public async Task<IQueryable<GetUserDTO>> GetUsersFromTrip(Guid tripId)
+        public async Task<IQueryable<GetTripUsersDTO>> GetUsersFromTrip(Guid tripId)
         {
             var users = await _tripAndUsersRepository.GetUsersFromTrip(tripId);
 
             if (users == null || users.Count == 0)
             {
-                return Enumerable.Empty<GetUserDTO>().AsQueryable();
+                return Enumerable.Empty<GetTripUsersDTO>().AsQueryable();
             }
 
-            var usersDto = _mapper.ProjectTo<GetUserDTO>(users.AsQueryable());
+            var usersDto = _mapper.ProjectTo<GetTripUsersDTO>(users.AsQueryable());
 
             return usersDto;
         }

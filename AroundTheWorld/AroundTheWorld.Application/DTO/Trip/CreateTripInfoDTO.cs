@@ -14,5 +14,6 @@ namespace AroundTheWorld.Application.DTO.Trip
         public DateTime EndDate { get; set;}
         public Boolean IsPublic { get; set; }
         public int MaxPeopleCount { get; set; }
+        public int MaxBudget { get; set; }
     }
 }
