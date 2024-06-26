@@ -4,12 +4,16 @@ using AroundTheWorld.Application.Communication.Commands.Trip.ChangeTripStatus;
 using AroundTheWorld.Application.Communication.Commands.Trip.CreateTrip;
 using AroundTheWorld.Application.Communication.Commands.Trip.EditTrip;
 using AroundTheWorld.Application.Communication.Commands.Trip.LeaveFromTrip;
+using AroundTheWorld.Application.Communication.Commands.Trip.RemoveMyTripRequest;
 using AroundTheWorld.Application.Communication.Commands.Trip.RemoveTrip;
+using AroundTheWorld.Application.Communication.Queries.Trip.GetMyRequests;
 using AroundTheWorld.Application.Communication.Queries.Trip.GetMyTrip;
 using AroundTheWorld.Application.Communication.Queries.Trip.GetPublicTrips;
+using AroundTheWorld.Application.Communication.Queries.Trip.GetTrip;
 using AroundTheWorld.Application.Communication.Queries.Trip.GetTripRequests;
 using AroundTheWorld.Application.Communication.Queries.Trip.GetUsersFromTrip;
 using AroundTheWorld.Application.DTO.Trip;
+using AroundTheWorld.Domain.Entities;
 using AroundTheWorld.Domain.Entities.Enums;
 using AroundTheWorld.Infrastructure.Policies;
 using AroundTheWorld.Web.Controllers.Base;
@@ -138,20 +142,50 @@ namespace AroundTheWorld.Web.Controllers
             await Mediator.Send(leaveFromTrip);
             return Ok();
         }
-        [HttpGet("{tripId}")]
+        [HttpPut("remove/request/{tripId}")]
         [Authorize]
         [ServiceFilter(typeof(TokenBlacklistFilterAttribute))]
-        [ProducesResponseType(typeof(GetUsersFromTripInfoDTO),200)]
+        [ProducesResponseType(200)]
         [ProducesResponseType(typeof(ExceptionResponseModel), 400)]
         [ProducesResponseType(typeof(ExceptionResponseModel), 401)]
         [ProducesResponseType(typeof(ExceptionResponseModel), 404)]
         [ProducesResponseType(typeof(ExceptionResponseModel), 500)]
-        public async Task<ActionResult<GetUsersFromTripInfoDTO>> GetUsersFromTrip(Guid tripId)
+        public async Task<ActionResult> RemoveTripRequest(Guid tripId)
+        {
+            var removeTripRequest = new RemoveMyTripRequestCommand(UserId, tripId);
+            await Mediator.Send(removeTripRequest);
+            return Ok();
+        }
+        [HttpGet("/users/{tripId}")]
+        [Authorize]
+        [ServiceFilter(typeof(TokenBlacklistFilterAttribute))]
+        [ProducesResponseType(typeof(IQueryable<GetUserDTO>),200)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 400)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 401)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 404)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 500)]
+        public async Task<ActionResult<IQueryable<GetUserDTO>>> GetUsersFromTrip(Guid tripId)
         {
             var getUsers = new GetUsersFromTripQuery(tripId);
             var result = await Mediator.Send(getUsers);
             return Ok(result);
         }
+
+        [HttpGet("/{tripId}")]
+        [Authorize]
+        [ServiceFilter(typeof(TokenBlacklistFilterAttribute))]
+        [ProducesResponseType(typeof(GetTripDTO), 200)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 400)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 401)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 404)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 500)]
+        public async Task<ActionResult<GetTripDTO>> GetTripById(Guid tripId)
+        {
+            var tripQuery = new GetTripQuery(tripId);
+            var result = await Mediator.Send(tripQuery);
+            return Ok(result);
+        }
+
         [HttpGet("requests/{tripId}")]
         [Authorize]
         [ServiceFilter(typeof(TokenBlacklistFilterAttribute))]
@@ -166,6 +200,21 @@ namespace AroundTheWorld.Web.Controllers
             var result = await Mediator.Send(getRequests);
             return Ok(result);
         }
+        [HttpGet("requests/my")]
+        [Authorize]
+        [ServiceFilter(typeof(TokenBlacklistFilterAttribute))]
+        [ProducesResponseType(typeof(GetMyRequestsDTO), 200)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 400)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 401)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 404)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 500)]
+        public async Task<ActionResult<List<GetMyRequestsDTO>>> GetUserRequests()
+        {
+            var getRequests = new GetMyRequestsQuery(UserId);
+            var result = await Mediator.Send(getRequests);
+            return Ok(result);
+        }
+
         [HttpDelete("remove/{tripId}")]
         [Authorize]
         [ServiceFilter(typeof(TokenBlacklistFilterAttribute))]

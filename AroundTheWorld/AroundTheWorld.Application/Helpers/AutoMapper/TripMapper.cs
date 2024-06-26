@@ -12,6 +12,7 @@ namespace AroundTheWorld.Application.Helpers.AutoMapper
             CreateMap<ApplyForTripInfoDTO, TripAndUsers>();
             CreateMap<User, GetUsersFromTripInfoDTO>();
             CreateMap<TripAndUsers, RequestsInfoDTO>();
+            CreateMap<TripAndUsers, GetMyRequestsDTO>();
         }
     }
 }

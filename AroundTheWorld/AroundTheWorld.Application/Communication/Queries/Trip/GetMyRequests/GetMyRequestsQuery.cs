@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AroundTheWorld.Application.Communication.Queries.Trip.GetUsersFromTrip
+namespace AroundTheWorld.Application.Communication.Queries.Trip.GetMyRequests
 {
-    public record class GetUsersFromTripQuery(Guid tripId) :IRequest<IQueryable<GetUserDTO>>;
+    public record class GetMyRequestsQuery(Guid userId): IRequest<List<GetMyRequestsDTO>>;
 }

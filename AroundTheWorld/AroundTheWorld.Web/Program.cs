@@ -34,12 +34,13 @@ app.Services.AddAutoMigration();
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
 app.UseCors(x => x
     .AllowAnyMethod()
     .AllowAnyHeader()
     .AllowCredentials()
     .SetIsOriginAllowed(origin => true));
+
+app.UseAuthorization();
 
 app.MapControllers();
 

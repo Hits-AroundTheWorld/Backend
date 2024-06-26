@@ -15,6 +15,8 @@ namespace AroundTheWorld.Application.Interfaces.Trips
         public Task<Trip?> GetTripById(Guid founderId, Guid tripId);
         public Task<bool> IsFounder(Guid userId, Guid tripId);
         public Task<bool> IsTripExists(Guid tripId);
+        public Task AddMapPointsAsync(List<MapPoint> mapPointsList, Guid parentId);
+        public Task<List<MapPoint>> GetMapPointsByTripIdAsync(Guid tripId);
     }
 }
  

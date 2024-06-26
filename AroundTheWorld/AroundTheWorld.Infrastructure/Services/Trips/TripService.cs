@@ -161,7 +161,7 @@ namespace AroundTheWorld.Infrastructure.Services.Trips
 
             if (page > countOfPages)
             {
-                throw new BadRequestException("Такой страницы нет");
+                throw new NotFoundException("Такой страницы нет");
             }
 
             var lowerBound = (page - 1) * sizeOfPage;
@@ -174,7 +174,7 @@ namespace AroundTheWorld.Infrastructure.Services.Trips
                 Current = countOfPages,
             };
 
-            var tripsDto = _mapper.Map<IEnumerable<GetTripsInfoDTO>>(pagedApplications).AsQueryable();
+            var tripsDto = _mapper.Map<IEnumerable<TripInfoDTO>>(pagedApplications).AsQueryable();
 
             var applicationsDTO = new GetQuerybleTripsInfoDTO
             {
@@ -222,7 +222,7 @@ namespace AroundTheWorld.Infrastructure.Services.Trips
 
             if (page > countOfPages)
             {
-                throw new BadRequestException("Такой страницы нет");
+                throw new NotFoundException("Такой страницы нет");
             }
 
             var lowerBound = (page - 1) * sizeOfPage;
@@ -235,7 +235,7 @@ namespace AroundTheWorld.Infrastructure.Services.Trips
                 Current = countOfPages,
             };
 
-            var tripsDto = _mapper.Map<IEnumerable<GetTripsInfoDTO>>(pagedApplications).AsQueryable();
+            var tripsDto = _mapper.Map<IEnumerable<TripInfoDTO>>(pagedApplications).AsQueryable();
 
             var applicationsDTO = new GetQuerybleTripsInfoDTO
             {
@@ -325,16 +325,16 @@ namespace AroundTheWorld.Infrastructure.Services.Trips
             await _tripAndUsersRepository.UpdateAsync(trip);
         }
 
-        public async Task<IQueryable<GetUsersFromTripInfoDTO>> GetUsersFromTrip(Guid tripId)
+        public async Task<IQueryable<GetUserDTO>> GetUsersFromTrip(Guid tripId)
         {
             var users = await _tripAndUsersRepository.GetUsersFromTrip(tripId);
 
             if (users == null || users.Count == 0)
             {
-                return Enumerable.Empty<GetUsersFromTripInfoDTO>().AsQueryable();
+                return Enumerable.Empty<GetUserDTO>().AsQueryable();
             }
 
-            var usersDto = _mapper.ProjectTo<GetUsersFromTripInfoDTO>(users.AsQueryable());
+            var usersDto = _mapper.ProjectTo<GetUserDTO>(users.AsQueryable());
 
             return usersDto;
         }
@@ -402,6 +402,41 @@ namespace AroundTheWorld.Infrastructure.Services.Trips
                 await _tripAndUsersRepository.DeleteAsync(user);
             }
             await _tripRepository.DeleteAsync(trip);
+        }
+
+        public async Task<List<GetMyRequestsDTO>> GetMyRequests(Guid userId)
+        {
+            var userRequests = await _tripAndUsersRepository.GetUserRequests(userId);
+            if(userRequests == null)
+            {
+                throw new NotFoundException("У вас нет действующих поездок!");
+            }
+            var requestsDtoList = _mapper.Map<List<TripAndUsers>, List<GetMyRequestsDTO>>(userRequests);
+
+            return requestsDtoList;
+        }
+        public async Task<GetTripDTO> GetTripById(Guid tripId)
+        {
+            var trip = await _tripRepository.GetByIdAsync(tripId);
+            var mapPoints = await _tripRepository.GetMapPointsByTripIdAsync(tripId);
+            var tripDTO = _mapper.Map<TripInfoDTO>(trip);
+
+            var fullTripDTO = new GetTripDTO
+            {
+                Trip = tripDTO,
+                MapPoints = mapPoints
+            };
+            return fullTripDTO;
+        }
+
+        public async Task RemoveTripRequest(Guid userId, Guid tripId)
+        {
+            var trip = await _tripAndUsersRepository.GetRequestByIdAsync(userId, tripId);
+            if (trip == null)
+            {
+                throw new NotFoundException("Такой поездки не существует!");
+            }
+            await _tripAndUsersRepository.DeleteAsync(trip);
         }
     }
 }

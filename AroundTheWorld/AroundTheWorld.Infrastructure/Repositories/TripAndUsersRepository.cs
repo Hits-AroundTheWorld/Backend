@@ -44,5 +44,9 @@ namespace AroundTheWorld.Infrastructure.Repositories
         {
             return await _dbContext.TripAndUsers.Where(t => t.UserId == userId).Select(i => i.TripId).ToListAsync();
         }
+        public async Task<List<TripAndUsers>?> GetUserRequests(Guid userId)
+        {
+            return await _dbContext.TripAndUsers.Where(t => t.UserId == userId).ToListAsync();
+        }
     }
 }

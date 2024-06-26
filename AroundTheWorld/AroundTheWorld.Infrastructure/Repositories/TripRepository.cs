@@ -49,5 +49,28 @@ namespace AroundTheWorld.Infrastructure.Repositories
             var isTripExists = await _dbContext.Trips.Where(t => t.TripId == tripId).AnyAsync();
             return isTripExists;
         }
+        public async Task<List<MapPoint>> GetMapPointsByTripIdAsync(Guid tripId)
+        {
+            var mapPoints = await _dbContext.MapPoints.Where(mp => mp.ParentId == tripId).ToListAsync();
+            return mapPoints;
+        }
+        public async Task AddMapPointsAsync(List<MapPoint> mapPointsList, Guid parentId)
+        {
+            List<MapPoint> tripMapPoints = new List<MapPoint>();
+            foreach (var point in mapPointsList)
+            {
+                var timeIntervalMapPoint = new MapPoint
+                {
+                    ParentId = parentId,
+                    Description = point.Description,
+                    Title = point.Title,
+                    XCoordinate = point.XCoordinate,
+                    YCoordinate = point.YCoordinate,
+                };
+                tripMapPoints.Add(timeIntervalMapPoint);
+            }
+            await _dbContext.MapPoints.AddRangeAsync(tripMapPoints);
+            await _dbContext.SaveChangesAsync();
+        }
     }
 }
