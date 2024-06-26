@@ -4,6 +4,7 @@ using AroundTheWorld.Application.Communication.Commands.Trip.ChangeTripStatus;
 using AroundTheWorld.Application.Communication.Commands.Trip.CreateTrip;
 using AroundTheWorld.Application.Communication.Commands.Trip.EditTrip;
 using AroundTheWorld.Application.Communication.Commands.Trip.LeaveFromTrip;
+using AroundTheWorld.Application.Communication.Commands.Trip.LoginTrip;
 using AroundTheWorld.Application.Communication.Commands.Trip.RemoveMyTripRequest;
 using AroundTheWorld.Application.Communication.Commands.Trip.RemoveTrip;
 using AroundTheWorld.Application.Communication.Queries.Trip.GetMyRequests;
@@ -227,6 +228,20 @@ namespace AroundTheWorld.Web.Controllers
         {
             var removeTrip = new RemoveTripCommand(UserId,tripId);
             await Mediator.Send(removeTrip);
+            return Ok();
+        }
+        [HttpPost("login/code")]
+        [Authorize]
+        [ServiceFilter(typeof(TokenBlacklistFilterAttribute))]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 400)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 401)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 404)]
+        [ProducesResponseType(typeof(ExceptionResponseModel), 500)]
+        public async Task<ActionResult> LoginByCode([FromBody] InviteCodeInfoDTO infoDTO)
+        {
+            var loginTrip = new LoginTripCommand(UserId, infoDTO);
+            await Mediator.Send(loginTrip);
             return Ok();
         }
     }
