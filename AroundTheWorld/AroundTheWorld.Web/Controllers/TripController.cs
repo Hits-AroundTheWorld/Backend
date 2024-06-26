@@ -238,9 +238,9 @@ namespace AroundTheWorld.Web.Controllers
         [ProducesResponseType(typeof(ExceptionResponseModel), 401)]
         [ProducesResponseType(typeof(ExceptionResponseModel), 404)]
         [ProducesResponseType(typeof(ExceptionResponseModel), 500)]
-        public async Task<ActionResult> LoginByCode(string inviteCode)
+        public async Task<ActionResult> LoginByCode([FromBody] InviteCodeInfoDTO infoDTO)
         {
-            var loginTrip = new LoginTripCommand(UserId, inviteCode);
+            var loginTrip = new LoginTripCommand(UserId, infoDTO);
             await Mediator.Send(loginTrip);
             return Ok();
         }

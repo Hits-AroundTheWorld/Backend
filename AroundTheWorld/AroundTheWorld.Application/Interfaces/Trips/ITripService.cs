@@ -25,6 +25,6 @@ namespace AroundTheWorld.Application.Interfaces.Trips
         public Task RemoveTrip(Guid userId, Guid tripId);
         public Task<List<GetMyRequestsDTO>> GetMyRequests(Guid userId);
         public Task<GetTripDTO> GetTripById(Guid tripId);
-        public Task LoginTripByInvite(Guid userId, string inviteCode);
+        public Task LoginTripByInvite(Guid userId, InviteCodeInfoDTO infoDTO);
     }
 }

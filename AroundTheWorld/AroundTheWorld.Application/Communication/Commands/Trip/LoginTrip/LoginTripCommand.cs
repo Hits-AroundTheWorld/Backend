@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using AroundTheWorld.Application.DTO.Trip;
+using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,5 +8,5 @@ using System.Threading.Tasks;
 
 namespace AroundTheWorld.Application.Communication.Commands.Trip.LoginTrip
 {
-    public record class LoginTripCommand(Guid userId, string inviteCode): IRequest;
+    public record class LoginTripCommand(Guid userId, InviteCodeInfoDTO infoDTO) : IRequest;
 }

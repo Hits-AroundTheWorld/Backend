@@ -20,7 +20,7 @@ namespace AroundTheWorld.Application.Communication.Commands.Trip.LoginTrip
 
         public async Task Handle(LoginTripCommand request, CancellationToken cancellationToken)
         {
-            await _tripService.LoginTripByInvite(request.userId, request.inviteCode);
+            await _tripService.LoginTripByInvite(request.userId, request.infoDTO);
         }
     }
 }

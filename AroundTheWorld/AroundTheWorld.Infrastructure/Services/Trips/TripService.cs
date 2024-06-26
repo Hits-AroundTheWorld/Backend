@@ -343,7 +343,7 @@ namespace AroundTheWorld.Infrastructure.Services.Trips
                 throw new NotFoundException("Такой поездки не существует!");
             }
             trip.Status = UserRequestStatus.LeftFromTrip;
-            await _tripAndUsersRepository.UpdateAsync(trip);
+            await _tripAndUsersRepository.DeleteAsync(trip);
         }
 
         public async Task<IQueryable<GetTripUsersDTO>> GetUsersFromTrip(Guid tripId)
@@ -460,9 +460,9 @@ namespace AroundTheWorld.Infrastructure.Services.Trips
             await _tripAndUsersRepository.DeleteAsync(trip);
         }
 
-        public async Task LoginTripByInvite(Guid userId, string inviteCode)
+        public async Task LoginTripByInvite(Guid userId, InviteCodeInfoDTO infoDTO)
         {
-            var trip = await _tripRepository.GetTripByInviteCode(inviteCode);
+            var trip = await _tripRepository.GetTripByInviteCode(infoDTO.InviteCode);
             if (trip == null)
             {
                 throw new NotFoundException("Такая поездка уже недоступна");
