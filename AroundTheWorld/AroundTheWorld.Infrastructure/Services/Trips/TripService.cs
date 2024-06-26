@@ -304,10 +304,24 @@ namespace AroundTheWorld.Infrastructure.Services.Trips
             tripRequest.Status = infoDTO.Status;
             if (tripRequest.Status == UserRequestStatus.Approved)
             {
+                if(trip.PeopleCountNow == trip.MaxPeopleCount)
+                {
+                    throw new BadRequestException("Количество людей уже слишком много вы не можете добавить еще!");
+                }
                 trip.PeopleCountNow += 1;
                 await _tripRepository.UpdateAsync(trip);
+                await _tripAndUsersRepository.UpdateAsync(tripRequest);
             }
-            await _tripAndUsersRepository.UpdateAsync(tripRequest);
+            else if(tripRequest.Status == UserRequestStatus.LeftFromTrip)
+            {
+                trip.PeopleCountNow -= 1;
+                await _tripRepository.UpdateAsync(trip);
+                await _tripAndUsersRepository.DeleteAsync(tripRequest);
+            }
+            else
+            {
+                await _tripAndUsersRepository.UpdateAsync(tripRequest);
+            }
         }
 
         public async Task ChangeTripStatus(Guid userId, ChangeTripStatusInfoDTO infoDTO)
