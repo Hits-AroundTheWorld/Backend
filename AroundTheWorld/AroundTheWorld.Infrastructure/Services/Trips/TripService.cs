@@ -161,7 +161,7 @@ namespace AroundTheWorld.Infrastructure.Services.Trips
 
             if (page > countOfPages)
             {
-                throw new BadRequestException("Такой страницы нет");
+                throw new NotFoundException("Такой страницы нет");
             }
 
             var lowerBound = (page - 1) * sizeOfPage;
@@ -222,7 +222,7 @@ namespace AroundTheWorld.Infrastructure.Services.Trips
 
             if (page > countOfPages)
             {
-                throw new BadRequestException("Такой страницы нет");
+                throw new NotFoundException("Такой страницы нет");
             }
 
             var lowerBound = (page - 1) * sizeOfPage;
