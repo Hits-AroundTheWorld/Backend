@@ -18,7 +18,7 @@ namespace AroundTheWorld.Infrastructure.Helpers.TripValidation
         {
             bool validateDate = ValidateDates(startDate);
             bool validateEndDate = ValidateStartAndEndDates(startDate, endTime);
-            if(validateDate)
+            if(validateEndDate)
             {
                 return "Вы не можете назначить конец поездки раньше чем начало поездки!";
             }

@@ -57,6 +57,9 @@ namespace AroundTheWorld.Infrastructure.Migrations
                     b.Property<bool>("IsChecked")
                         .HasColumnType("boolean");
 
+                    b.Property<int>("NumberOfItems")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Text")
                         .IsRequired()
                         .HasColumnType("text");
@@ -80,6 +83,33 @@ namespace AroundTheWorld.Infrastructure.Migrations
                     b.HasKey("FirstCompanion", "SecondCompanion");
 
                     b.ToTable("Companions");
+                });
+
+            modelBuilder.Entity("AroundTheWorld.Domain.Entities.MapPoint", b =>
+                {
+                    b.Property<Guid>("ParentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("pointId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<double>("XCoordinate")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("YCoordinate")
+                        .HasColumnType("double precision");
+
+                    b.HasKey("ParentId", "pointId");
+
+                    b.ToTable("MapPoints");
                 });
 
             modelBuilder.Entity("AroundTheWorld.Domain.Entities.TimeInterval", b =>
@@ -109,25 +139,6 @@ namespace AroundTheWorld.Infrastructure.Migrations
                     b.ToTable("TimeIntervals");
                 });
 
-            modelBuilder.Entity("AroundTheWorld.Domain.Entities.TimeIntervalMapPoint", b =>
-                {
-                    b.Property<Guid>("ParentId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("pointId")
-                        .HasColumnType("uuid");
-
-                    b.Property<double>("XCoordinate")
-                        .HasColumnType("double precision");
-
-                    b.Property<double>("YCoordinate")
-                        .HasColumnType("double precision");
-
-                    b.HasKey("ParentId", "pointId");
-
-                    b.ToTable("MapPoints");
-                });
-
             modelBuilder.Entity("AroundTheWorld.Domain.Entities.Trip", b =>
                 {
                     b.Property<Guid>("TripId")
@@ -139,12 +150,6 @@ namespace AroundTheWorld.Infrastructure.Migrations
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<double?>("FinishXCoordinate")
-                        .HasColumnType("double precision");
-
-                    b.Property<double?>("FinishYCoordinate")
-                        .HasColumnType("double precision");
 
                     b.Property<string>("InvitationLink")
                         .HasColumnType("text");
@@ -163,12 +168,6 @@ namespace AroundTheWorld.Infrastructure.Migrations
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<double?>("StartXCoordinate")
-                        .HasColumnType("double precision");
-
-                    b.Property<double?>("StartYCoordinate")
-                        .HasColumnType("double precision");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
@@ -241,9 +240,6 @@ namespace AroundTheWorld.Infrastructure.Migrations
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<float>("Rating")
-                        .HasColumnType("real");
 
                     b.HasKey("Id");
 

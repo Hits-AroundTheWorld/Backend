@@ -156,22 +156,22 @@ namespace AroundTheWorld.Web.Controllers
             await Mediator.Send(removeTripRequest);
             return Ok();
         }
-        [HttpGet("/users/{tripId}")]
+        [HttpGet("users/{tripId}")]
         [Authorize]
         [ServiceFilter(typeof(TokenBlacklistFilterAttribute))]
-        [ProducesResponseType(typeof(IQueryable<GetUserDTO>),200)]
+        [ProducesResponseType(typeof(IQueryable<GetTripUsersDTO>),200)]
         [ProducesResponseType(typeof(ExceptionResponseModel), 400)]
         [ProducesResponseType(typeof(ExceptionResponseModel), 401)]
         [ProducesResponseType(typeof(ExceptionResponseModel), 404)]
         [ProducesResponseType(typeof(ExceptionResponseModel), 500)]
-        public async Task<ActionResult<IQueryable<GetUserDTO>>> GetUsersFromTrip(Guid tripId)
+        public async Task<ActionResult<IQueryable<GetTripUsersDTO>>> GetUsersFromTrip(Guid tripId)
         {
             var getUsers = new GetUsersFromTripQuery(tripId);
             var result = await Mediator.Send(getUsers);
             return Ok(result);
         }
 
-        [HttpGet("/{tripId}")]
+        [HttpGet("{tripId}")]
         [Authorize]
         [ServiceFilter(typeof(TokenBlacklistFilterAttribute))]
         [ProducesResponseType(typeof(GetTripDTO), 200)]
