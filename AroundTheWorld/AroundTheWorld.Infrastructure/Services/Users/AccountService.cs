@@ -72,32 +72,6 @@ namespace AroundTheWorld.Infrastructure.Services.Users
             var userProfileDTO = _mapper.Map<ProfileInfoDTO>(user);
             return userProfileDTO;
         }
-
-        public async Task<ProfileInfoDTO> CheckRatingSetPossibility(Guid userId)
-        {
-            var user = await _userRepository.GetByIdAsync(userId);
-            var userProfileDTO = _mapper.Map<ProfileInfoDTO>(user);
-            return userProfileDTO;
-        }
-        public async Task SetRating(RatingElement ratingElement)
-        {
-            var ratedUser = await _userRepository.GetByIdAsync(ratingElement.RatedUserId);
-            var GivingRateUserId = await _userRepository.GetByIdAsync(ratingElement.GivingRateUserId);
-
-            if (ratedUser != null)
-            {
-                throw new NotFoundException("Пользователя для оценки не существует");
-            }
-            if (GivingRateUserId != null)
-            {
-                throw new NotFoundException("Оценивающего пользователя не существует");
-            }
-        }
-
-        private async Task calculateRating()
-        {
-
-        }
         
         public async Task<GetUsersDTO> GetAllAusers(GetUsersFilterDTO filters)
         {
