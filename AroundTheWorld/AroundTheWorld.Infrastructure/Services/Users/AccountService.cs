@@ -118,25 +118,14 @@ namespace AroundTheWorld.Infrastructure.Services.Users
         {
             if (age != null)
             {
-                users = users.Where(u => 
-                    CalculateAge(u.BirthDate) < age.MaxAge &&
-                    CalculateAge(u.BirthDate) > age.MinAge);
+                DateTime currentDate = DateTime.UtcNow;
+                DateTime minDate = currentDate.AddYears(-age.MaxAge);
+                DateTime maxDate = currentDate.AddYears(-age.MinAge);
+
+                users = users.Where(u => u.BirthDate <= maxDate && u.BirthDate >= minDate);
             }
 
             return users;
-        }
-        private int CalculateAge(DateTime birthDate)
-        {
-            var currentDate = DateTime.Now;
-
-            int age = currentDate.Year - birthDate.Year;
-
-            if (currentDate < birthDate.AddYears(age))
-            {
-                age--;
-            }
-
-            return age;
         }
 
         private IQueryable<User> FilterByPagination(
@@ -186,11 +175,11 @@ namespace AroundTheWorld.Infrastructure.Services.Users
         {
             var programsCount = users.Count();
 
-            List<GetUserDTO> usersProfiles = new List<GetUserDTO>();
+            List<ProfileInfoDTO> usersProfiles = new List<ProfileInfoDTO>();
 
             foreach (var user in users)
             {
-                var userProfile = _mapper.Map<GetUserDTO>(user);
+                var userProfile = _mapper.Map<ProfileInfoDTO>(user);
 
                 usersProfiles.Add(userProfile);
             }

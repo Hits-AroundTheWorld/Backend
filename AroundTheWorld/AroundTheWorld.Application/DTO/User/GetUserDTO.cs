@@ -8,6 +8,6 @@ namespace AroundTheWorld.Application.DTO.User
 {
     public class GetUserDTO: ProfileInfoDTO
     {
-        public Guid UserId { get; set;}
+        public Guid Id { get; set;}
     }
 }
