@@ -48,7 +48,6 @@ namespace AroundTheWorld.Infrastructure.Repositories
         {
             var checklists = _dbContext.Checkpoints.Where(cp => cp.ChecklistId == checklistId);
             _dbContext.RemoveRange(checklists);
-            _dbContext.SaveChangesAsync();
         }
         public async Task<bool> ChecklistExistsAsync(Guid checklistId)
         {
