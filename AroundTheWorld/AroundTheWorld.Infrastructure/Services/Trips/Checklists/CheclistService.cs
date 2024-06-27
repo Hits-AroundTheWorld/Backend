@@ -86,13 +86,6 @@ namespace AroundTheWorld.Infrastructure.Services.Trips.Checklists
 
         public async Task<IList<Checklist>> GetChecklistByParentId(Guid parentId)
         {
-            var parentExists = await _checklistRepository.ParentExistAsync(parentId);
-
-            if (!parentExists)
-            {
-                throw new NotFoundException("Родителя с таким id не существует");
-            }
-
             var checklist = await _checklistRepository.GetCheclistsByParentIdAsync(parentId);
 
             return checklist;
