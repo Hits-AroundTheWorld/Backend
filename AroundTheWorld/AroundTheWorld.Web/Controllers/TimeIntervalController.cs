@@ -64,7 +64,7 @@ namespace AroundTheWorld.Web.Controllers
         [ProducesResponseType(typeof(ExceptionResponseModel), 401)]
         [ProducesResponseType(typeof(ExceptionResponseModel), 404)]
         [ProducesResponseType(typeof(ExceptionResponseModel), 500)]
-        public async Task<ActionResult<IQueryable<TimeInterval>>> GetTripTimeIntervals([FromQuery] Guid tripId)
+        public async Task<ActionResult<IQueryable<TimeInterval>>> GetTripTimeIntervals(Guid tripId)
         {
             var getTripTimeIntervalsQuery = new GetTripTimeIntervalsQuery(tripId);
             var tripIntervals = await Mediator.Send(getTripTimeIntervalsQuery);
@@ -78,7 +78,7 @@ namespace AroundTheWorld.Web.Controllers
         [ProducesResponseType(typeof(ExceptionResponseModel), 401)]
         [ProducesResponseType(typeof(ExceptionResponseModel), 404)]
         [ProducesResponseType(typeof(ExceptionResponseModel), 500)]
-        public async Task<ActionResult<GetTimeIntervalDTO>> GetTripTimeInterval([FromQuery] Guid timeIntervalId)
+        public async Task<ActionResult<GetTimeIntervalDTO>> GetTripTimeInterval(Guid timeIntervalId)
         {
             var getTripTimeIntervalQuery = new GetTripTimeIntervalQuery(timeIntervalId);
             var tripInterval = await Mediator.Send(getTripTimeIntervalQuery);

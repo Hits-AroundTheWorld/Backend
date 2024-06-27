@@ -28,15 +28,8 @@ namespace AroundTheWorld.Infrastructure.Services.Trips.Checklists
         public async Task CreateChecklist(CreateChecklistDTO checklistDTO, Guid userId)
         {
 
-            var parentExist = await _checklistRepository.ParentExistAsync(checklistDTO.ParentId);
-
-            if (!parentExist)
-            {
-                throw new NotFoundException("Такого родительского элемента не существует");
-            }
-
             var newChecklist = _mapper.Map<Checklist>(checklistDTO);
-            newChecklist.UpdateTime = DateTime.Now;
+            newChecklist.UpdateTime = DateTime.UtcNow;
 
             await _checklistRepository.AddAsync(newChecklist);
         }
@@ -93,13 +86,6 @@ namespace AroundTheWorld.Infrastructure.Services.Trips.Checklists
 
         public async Task<IList<Checklist>> GetChecklistByParentId(Guid parentId)
         {
-            var parentExists = await _checklistRepository.ParentExistAsync(parentId);
-
-            if (!parentExists)
-            {
-                throw new NotFoundException("Родителя с таким id не существует");
-            }
-
             var checklist = await _checklistRepository.GetCheclistsByParentIdAsync(parentId);
 
             return checklist;

@@ -48,13 +48,6 @@ namespace AroundTheWorld.Infrastructure.Services.Trips.TimeIntervals
 
         public async Task<IQueryable<TimeInterval>> GetTripTimeIntervals(Guid tripId)
         {
-            var isTripExists = await _tripRepository.IsTripExists(tripId);
-
-            if (!isTripExists)
-            {
-                throw new NotFoundException("Поездки с таким id не существует");
-            }
-
             var intervals = _timeIntervalRepository.GetTimeIntervalsByTripId(tripId);
             return intervals;
         }
